@@ -38,7 +38,8 @@ public class Images {
 
 
 	public static ImageIcon pointer, eraser, track, lu, hidden, hiddenlu, ee, crossing, curve;
-	public static ImageIcon save, stop, zoomin, zoomout, edit, information, sep, pause, populate, newt, delete, importt, exportt, contexthelp;
+	public static ImageIcon save, stop, zoomin, zoomout, edit, information, sep, pause,
+	accelerate, populate, newt, delete, importt, exportt, contexthelp;
 	public static ImageIcon undo, redo;
 	public static BufferedImage opening;
 	public static BufferedImage applet;
@@ -70,6 +71,7 @@ public class Images {
 		edit = new ImageIcon(getClass().getResource("/net/kolls/railworld/images/Edit.gif"));
 		information = new ImageIcon(getClass().getResource("/net/kolls/railworld/images/Information.gif"));
 		pause = new ImageIcon(getClass().getResource("/net/kolls/railworld/images/Pause.gif"));
+		accelerate = new ImageIcon(getClass().getResource("/net/kolls/railworld/images/Accelerate.gif"));
 
 		sep = new ImageIcon(getClass().getResource("/net/kolls/railworld/images/SEP.gif"));
 		populate = new ImageIcon(getClass().getResource("/net/kolls/railworld/images/Populate.gif"));

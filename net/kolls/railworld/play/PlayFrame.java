@@ -557,8 +557,15 @@ public class PlayFrame extends RailFrame {
 				Sounds.allFreeze();
 			else
 				Sounds.allUnfreeze();
+		}
 
-
+		if (e.getActionCommand().equals("Accelerate")) {
+			JToggleButton tb = (JToggleButton)e.getSource();
+			if (tb.isSelected()) {
+				gl.accelerate();
+			} else {
+				gl.normalSpeed();
+			}
 		}
 
 		if (e.getActionCommand().equals("Information")) {
@@ -762,6 +769,11 @@ public class PlayFrame extends RailFrame {
 		toolBar.add(tb);
 		pause = tb;
 
+		tb = new JToggleButton(Images.accelerate);
+		tb.setActionCommand("Accelerate");
+		tb.setToolTipText("Accelerate Game");
+		tb.addActionListener(this);
+		toolBar.add(tb);
 
 		tb = new JToggleButton(Images.contexthelp);
 		tb.setActionCommand("ContextHelp");

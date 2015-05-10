@@ -49,6 +49,11 @@ public abstract class GameLoop {
 
 	private boolean running;
 
+	private static final double ACCELERATE_SPEED = 200.0;
+	private static final double NORMAL_SPEED = 1000.0;
+
+	private static double sim_speed = NORMAL_SPEED;
+
 	/**
 	 * Set to <code>true</code> to suspend behavior but retain painting.
 	 * Note that the loop continues to run and update the display, so display
@@ -90,7 +95,7 @@ public abstract class GameLoop {
 
 		rv *= fps; // how many feet per second
 
-		rv *= (CLOCK_WAIT / 1000.0); // scale by clock step
+		rv *= (CLOCK_WAIT / sim_speed); // scale by clock step
 
 		return rv;
 	}
@@ -109,7 +114,7 @@ public abstract class GameLoop {
 		elapsed = 0;
 
 		if (Options.getFPS() != 0) {
-			CLOCK_WAIT = (int)((1.0 / Options.getFPS()) * 1000);
+			CLOCK_WAIT = (int)((1.0 / Options.getFPS()) * sim_speed);
 			adjust = false;
 		}
 
@@ -121,7 +126,7 @@ public abstract class GameLoop {
 	 * @return The current target FPS
 	 */
 	public int fps() {
-		return (int)(1.0 / (CLOCK_WAIT / 1000.0));
+		return (int)(1.0 / (CLOCK_WAIT / sim_speed));
 	}
 
 	/**
@@ -184,6 +189,14 @@ public abstract class GameLoop {
 	public void stop() {
 		running = false;
 
+	}
+
+	public void accelerate() {
+		sim_speed = ACCELERATE_SPEED;
+	}
+
+	public void normalSpeed() {
+		sim_speed = NORMAL_SPEED;
 	}
 
 	private BlockingQueue<Runnable> todos;
