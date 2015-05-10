@@ -47,7 +47,7 @@ import net.kolls.railworld.segment.Signal;
 /**
  * Provides an undecorated, popup frame for the user to select a signal program.
  * Disposes when a program is selected or when the mouse leaves the frame.
- * 
+ *
  * @author Steve Kollmansberger
  *
  */
@@ -55,79 +55,80 @@ public class SignalProgramChooser extends JFrame implements AWTEventListener {
 
 
 	private ButtonGroup spsg;
-	
 
-	
+
+
 	private JToggleButton createButton(final SignalProgram s, final Signal signal) {
 		JToggleButton tb = new JToggleButton();
 		tb.setIcon(s.icon());
 		if (s.getClass().equals(signal.sp.getClass())) tb.setSelected(true);
 		tb.addActionListener(new ActionListener() {
 
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				signal.sp = s;
 				close();
 			}
-			
+
 		});
 		tb.setToolTipText(s.toString());
 		tb.setPreferredSize(new Dimension(s.icon().getIconWidth()+8, s.icon().getIconHeight()+8));
 		spsg.add(tb);
 		return tb;
-		
+
 	}
-	
-	
+
+
 	/**
 	 * Create a program chooser for a signal.
-	 * 
+	 *
 	 * @param signal The signal to select the program for.
 	 */
 	public SignalProgramChooser(Signal signal) {
-		
+
 		setUndecorated(true);
-		
+
 		// check to see if we are in an applet
 		// if so, re-enable window decorations
 		// otherwise the security manager will not display the window
 		// this is kind of lame and could only be solved by
 		// using a panel inside the main window, or signing the applet
 		SecurityManager security = System.getSecurityManager();
-	    if (security != null) {
-	         if (security.checkTopLevelWindow(this) == false)
-	        	 setUndecorated(false);
-	    }
-	     
-		
-		
-		
-		
+		if (security != null) {
+			if (security.checkTopLevelWindow(this) == false)
+				setUndecorated(false);
+		}
+
+
+
+
+
 		JPanel sig = new JPanel();
 		sig.setLayout(new GridLayout(0,3));
-		
+
 		spsg = new ButtonGroup();
-		
+
 		ArrayList<SignalProgram> sps = Factories.sps.allTypes();
 		for (int i = 0; i < sps.size(); i++) {
 			sig.add(createButton(sps.get(i), signal));
-			
+
 		}
-		
-		
+
+
 		try {
 			Toolkit.getDefaultToolkit().addAWTEventListener(this, Event.MOUSE_EXIT | Event.MOUSE_ENTER);
 		} catch (AccessControlException ex) {
 			// applet doesn't allow this
 		}
-		
-		
+
+
 
 		add(sig);
 		pack();
-		
-	
+
+
 	}
-	
+
 	private void close() {
 		try {
 			Toolkit.getDefaultToolkit().removeAWTEventListener(this);
@@ -136,30 +137,31 @@ public class SignalProgramChooser extends JFrame implements AWTEventListener {
 		}
 		dispose();
 	}
-	
+
 	private boolean wentInside = false;
 
 	/**
-	 * Close the window when the mouse enters then leaves it.  
+	 * Close the window when the mouse enters then leaves it.
 	 */
-	public void eventDispatched(AWTEvent event) { 
-	        if (event instanceof MouseEvent) { 
-	            MouseEvent me = (MouseEvent) event;
-	            
-	            if (!SwingUtilities.isDescendingFrom(me.getComponent(), this)) {
-	            	if (wentInside) {
-	            		close();
-	            	}
-	                
-	            	return; 
-	            }  else wentInside = true;
-	              
-	            repaint();
-	        } 
-	    }
+	@Override
+	public void eventDispatched(AWTEvent event) {
+		if (event instanceof MouseEvent) {
+			MouseEvent me = (MouseEvent) event;
+
+			if (!SwingUtilities.isDescendingFrom(me.getComponent(), this)) {
+				if (wentInside) {
+					close();
+				}
+
+				return;
+			}  else wentInside = true;
+
+			repaint();
+		}
+	}
 
 
-	
 
-	
+
+
 }

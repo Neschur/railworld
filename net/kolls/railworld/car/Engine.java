@@ -19,25 +19,29 @@ package net.kolls.railworld.car;
  */
 
 
-import net.kolls.railworld.Distance;
+import java.awt.Color;
 
-import java.awt.*;
+import net.kolls.railworld.Distance;
 
 // based on GE Dash 7
 /**
  * Locomotive based on GE Dash 7
- * 
+ *
  * @author Steve Kollmansberger
  */
 public class Engine extends AbstractCar {
 	private static final Distance d = new Distance(67, Distance.Measure.FEET);
+	@Override
 	public Distance length() { return d; } // 67 ft
 	@Override
 	public boolean loaded() { return true; }
+	@Override
 	public int weight() { return 210;} // 420 Klbs
-	public Color color() { 
+	@Override
+	public Color color() {
 		return Color.darkGray;
 	}
+	@Override
 	public String show() { return "Engine"; }
 	@Override
 	public void load() { }

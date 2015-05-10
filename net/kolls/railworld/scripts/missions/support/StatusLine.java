@@ -29,22 +29,22 @@ import net.kolls.railworld.play.script.DrawListener;
 
 /**
  * Displays a status line (e.g. points, etc) on the display.
- * 
+ *
  * @author Steve Kollmansberger
  */
 public class StatusLine implements DrawListener {
 
 	public String status = "";
-	
+
 	@Override
 	public void draw(Graphics2D gc, Rectangle onScreen) {
 		AffineTransform ct = gc.getTransform();
 		gc.setTransform(new java.awt.geom.AffineTransform());
 
 
-		RailCanvas.drawOutlineFont(gc, 20, 40,  
-			status, 10, java.awt.Color.white, 0, false);
-			
+		RailCanvas.drawOutlineFont(gc, 20, 40,
+				status, 10, java.awt.Color.white, 0, false);
+
 		gc.setTransform(ct);
 
 

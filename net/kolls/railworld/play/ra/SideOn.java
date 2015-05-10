@@ -28,7 +28,7 @@ import net.kolls.railworld.play.RailAccident;
 /**
  * A merging collision or overlap which occurs which two trains merge at a switch,
  * cross at a four-way, or enter on top of each other.
- * 
+ *
  * @author Steve Kollmansberger
  *
  */
@@ -36,14 +36,14 @@ public class SideOn extends RailAccident {
 
 	/**
 	 * Create a side-on collision.  Simply calls super constructor.
-	 * 
+	 *
 	 * @param first First train
 	 * @param second Second train
 	 * @param p Location of accident
 	 */
 	public SideOn(Train first, Train second, Point2D p) {
 		super(first, second, p);
-	
+
 	}
 
 	@Override

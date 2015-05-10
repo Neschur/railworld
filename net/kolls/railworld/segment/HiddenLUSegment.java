@@ -18,14 +18,19 @@ package net.kolls.railworld.segment;
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-import net.kolls.railworld.*;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Paint;
+import java.awt.Stroke;
+import java.awt.geom.Line2D;
 
-import java.awt.geom.*;
-import java.awt.*;
+import net.kolls.railworld.Car;
+import net.kolls.railworld.RailSegment;
 
 /**
  * A hidden load/unload segment.
- * 
+ *
  * @author Steve Kollmansberger
  *
  */
@@ -36,9 +41,9 @@ public class HiddenLUSegment extends LUSegment {
 		super.recomp();
 		dl = new BasicStroke(RAIL_WIDTH.iPixels(),BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 10.0f, new float[] {5.0f, 5.0f}, 0.0f);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param bg
 	 * @param en
 	 * @param crds
@@ -47,31 +52,31 @@ public class HiddenLUSegment extends LUSegment {
 	 */
 	public HiddenLUSegment(RailSegment bg, RailSegment en, Line2D crds, Car[] accept, boolean drawAccept) {
 		super(bg, en, crds,accept, drawAccept);
-		
-		
+
+
 	}
 	@Override
 	public void draw(int z, Graphics2D gc) {
-		
+
 		Paint p = gc.getPaint();
 
-		
 
-		
+
+
 		if (z == 2) {
-				
+
 			gc.setPaint(Color.magenta);
 			gc.setStroke(dl);
 			gc.draw(coords);
 			if (drawAc) drawAccept(gc);
-			
-			
+
+
 		}
-		
+
 
 		gc.setPaint(p);
 
-		
+
 	}
 	@Override
 	public boolean carHidden() { return true; }

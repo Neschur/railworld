@@ -19,33 +19,33 @@ package net.kolls.railworld;
  */
 
 
-import java.awt.geom.*;
+import java.awt.geom.Line2D;
 
 /**
  * A DLoc represents a location, direction, and rendering information.
  * The rendering information is stored as a series of lines which may be
  * stroked to display a Car or other item.
- * 
+ *
  * @author Steve Kollmansberger
  *
  */
 public class DLoc {
-	
+
 	/**
 	 * Construct a DLoc.
-	 * 
+	 *
 	 * @param li The rendering lines.  May be <code>null</code>.
 	 * @param nl A {@link CLoc}, indicating location and position.
 	 */
 	public DLoc(Line2D[] li, CLoc nl) { lines = li; newLoc = nl; }
-	
+
 	/**
 	 * An array of lines to be drawn for this item.  Note that
 	 * the lines may not be adjacent (for example, if part of the car
 	 * is hidden).
 	 */
 	public Line2D[] lines;
-	
+
 	/**
 	 * The head position associated with this item.
 	 */

@@ -2,12 +2,10 @@ package net.kolls.railworld.scripts;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.Vector;
 
 import javax.swing.JPanel;
 
@@ -24,7 +22,6 @@ import net.kolls.railworld.segment.Crossing;
 import net.kolls.railworld.segment.Curve;
 import net.kolls.railworld.segment.EESegment;
 import net.kolls.railworld.segment.TrackSegment;
-import net.kolls.railworld.segment.sp.Green;
 
 /*
  * Copyright (C) 2010 Steve Kollmansberger
@@ -48,24 +45,24 @@ import net.kolls.railworld.segment.sp.Green;
 /**
  * Provides for speed limits based on turns. Creates
  * an accident if speed limit exceeded.
- * 
+ *
  * @author Steve Kollmansberger
  */
 public class SpeedLimits implements Script {
 
 	private PlayFrame mpf;
-	
+
 	@Override
 	public String toString() {
 		return "Speed Limits";
 	}
-	
+
 	@Override
 	public void init(PlayFrame pf) {
 		mpf = pf;
 	}
 
-	
+
 	// the story is
 	// I want to break angles down into 180 degree bits
 	// and find out how different they are
@@ -77,27 +74,27 @@ public class SpeedLimits implements Script {
 			x += Math.PI;
 		if (x > Math.PI)
 			x -= Math.PI;
-		
+
 		return x;
-		
+
 	}
-	
-	
-	
+
+
+
 	private SpeedLimitSegment trackSegments(RailSegment a, RailSegment b) {
 		double ror_a, ror_b;
 		SpeedLimitSegment n;
-		
+
 		ror_a = ror(a);
 		ror_b = ror(b);
-		
-		
+
+
 		ror_a = Math.min(ror_a, Math.PI - ror_a);
 		ror_b = Math.min(Math.PI - ror_b, ror_b);
-		
+
 		double c = Math.abs(ror_a - ror_b);
 		n = null;
-		
+
 		if (c >= 0.4) {
 			n = new SpeedLimitSegment(a, b, 15);
 		} else if (c >= 0.2) {
@@ -106,26 +103,26 @@ public class SpeedLimits implements Script {
 			n = new SpeedLimitSegment(a, b, 35);
 		}
 
-	
+
 		return n;
 	}
-	
+
 	private int curveSegment(Curve a) {
-		
+
 		int limit = 0;
-		
-		
+
+
 		double len = a.length().pixels();
-		
+
 		Point2D p1 = a.getPoint(0);
 		Point2D p2 = a.getPoint(1);
 		double dx = p1.getX() - p2.getX();
-        double dy = p1.getY() - p2.getY();
-        double d = Math.sqrt(dx*dx + dy*dy);
-        
-        double c = len / d;
-		
-		
+		double dy = p1.getY() - p2.getY();
+		double d = Math.sqrt(dx*dx + dy*dy);
+
+		double c = len / d;
+
+
 		if (c >= 1.1) {
 			limit = 15;
 		} else if (c >= 1.05) {
@@ -133,20 +130,20 @@ public class SpeedLimits implements Script {
 		} else if (c >= 1) {
 			limit = 35;
 		}
-System.out.println(c);
+		System.out.println(c);
 
-	
+
 		return limit;
 	}
-	
+
 	@Override
 	public RailSegment[] modifySegments(RailSegment[] lines) {
 		// install speed limits
 		ArrayList<RailSegment> vl = new ArrayList<RailSegment>();
 		RailSegment a, b;
 		SpeedLimitSegment n;
-		
-		
+
+
 		for (int i = 0; i < lines.length; i++) {
 			if (lines[i] instanceof Curve) {
 				Curve ca = (Curve)lines[i];
@@ -158,33 +155,33 @@ System.out.println(c);
 					a.update(ca, n);
 					ca.update(a, n);
 					vl.add(n);
-					
+
 					n = new SpeedLimitSegment(ca, b, limit);
 					b.update(ca, n);
 					ca.update(b, n);
 					vl.add(n);
-					
+
 				}
-				
+
 			}
 			if (lines[i] instanceof TrackSegment) {
 				a = lines[i];
 				b = lines[i].getDest(0);
 				if (a instanceof EESegment || a instanceof Crossing)
 					continue;
-				
+
 				if (b instanceof TrackSegment && !(b instanceof EESegment || b instanceof Crossing) ) {
 					n = trackSegments(a, b);
 					if (n != null) {
 						vl.add(n);
 						a.update(b, n);
 						b.update(a, n);
-					} 
-					
+					}
+
 				}
-				
+
 				b = lines[i].getDest(1);
-				
+
 				if (b instanceof TrackSegment && !(b instanceof EESegment || b instanceof Crossing)) {
 					n = trackSegments(a, b);
 					if (n != null) {
@@ -192,16 +189,16 @@ System.out.println(c);
 						a.update(b, n);
 						b.update(a, n);
 					}
-					
+
 				}
 			}
 		}
-		
+
 		RailSegment[] nl = new RailSegment[lines.length + vl.size()];
 		System.arraycopy(lines, 0, nl, 0, lines.length);
 		for (int i = 0; i < vl.size(); i++)
 			nl[lines.length + i] = vl.get(i);
-		
+
 		return nl;
 	}
 
@@ -233,40 +230,40 @@ System.out.println(c);
 	public boolean onByDefault() {
 		return false;
 	}
-	
+
 	/**
 	 * A segment which restricts speed of trains on it.
 	 * Throws a RailAccident if a train enter's with excess speed.
-	 * 
+	 *
 	 * @author Steve Kollmansberger
 	 *
 	 */
 	public class SpeedLimitSegment extends RailSegment {
 
-		
+
 		private final Distance zd = new Distance(0, Distance.Measure.FEET);
 		private final Distance size = new Distance(15, Distance.Measure.FEET);
-		
+
 		/**
 		 * The speed limit, in MPH
 		 */
 		protected int limit;
-		
+
 		/**
 		 * The begin segment.
 		 */
 		public static final int POINT_BEGIN = 0;
-		
+
 		/**
 		 * The destination segment.
 		 */
 		public static final int POINT_END = 1;
-		
+
 		/**
-		 * Create a speed limit point. 
+		 * Create a speed limit point.
 		 *  Any train entering or remaining in the point must not exceed
 		 *  the posted limit.
-		 *  
+		 *
 		 * @param begin The begin (origin) segment
 		 * @param end The destination segment
 		 */
@@ -274,17 +271,17 @@ System.out.println(c);
 			dests = new RailSegment[2];
 			this.dests[0] = begin;
 			this.dests[1] = end;
-			
+
 			pts = new Point2D[1];
 			pts[0] = begin.getPoint(end, 0);
-			
+
 			this.limit = limit;
 			recomp();
-			
-				
-			
+
+
+
 		}
-		
+
 		// this will not appear in the editor
 		// so don't worry about it
 		@Override
@@ -297,7 +294,7 @@ System.out.println(c);
 			return null;
 		}
 
-		
+
 		@Override
 		public RailSegment dest(RailSegment source) {
 			if (source == dests[0]) return dests[1]; else return dests[0];
@@ -307,13 +304,13 @@ System.out.println(c);
 		public void draw(int z, Graphics2D gc) {
 			if (z == 4) {
 				Point2D p2 = pts[0];
-				
-				RailCanvas.drawOutlineFont(gc, (int)p2.getX(), (int)p2.getY(), 
+
+				RailCanvas.drawOutlineFont(gc, (int)p2.getX(), (int)p2.getY(),
 						Integer.toString(limit), size.iPixels(), Color.white, 0, true);
-				
-				
+
+
 			}
-			
+
 		}
 
 		@Override
@@ -332,41 +329,41 @@ System.out.println(c);
 		}
 
 		@Override
-		public void recomp() {	
+		public void recomp() {
 		}
-		
+
 		@Override
 		public boolean singleton() {
 			return true;
 		}
-		
+
 		@Override
 		public boolean isDynamic() {
 			return true;
 		}
-		
+
 		private Train didThrow;
-		
+
 		@Override
 		public void enter(final Train t) {
 			if (didThrow == t)
 				return;
-				
+
 			// need didThrow because enter occurs again
 			// when preparing the "scene"
 			if (t.vel() > limit + 2) { // found that actual speed up to 2 mph faster than selected, indicates 1 because of rounding
 				didThrow = t;
-				
+
 				ScriptManager.DeferIntoStep(mpf, t, new Runnable() {
 					@Override
 					public void run() {
 						throw new TooFast(t, pts[0]);
 					}
 				});
-				
+
 			}
 		}
-		
+
 		@Override
 		public String mouseOver(Point2D pos) {
 			if (pts[0].distance(pos) <= MOUSE_NEAR.iPixels()) {
@@ -375,10 +372,10 @@ System.out.println(c);
 			return null;
 		}
 	}
-	
+
 	/**
 	 * A speed limit over-run.
-	 * 
+	 *
 	 * @author Steve Kollmansberger
 	 *
 	 */
@@ -386,14 +383,14 @@ System.out.println(c);
 
 		/**
 		 * Create a "too fast" accident.  Just calls the super constructor.
-		 * 
+		 *
 		 * @param first First train
 		 * @param p Location of accident
 		 */
 		public TooFast(Train first, Point2D p) {
 			super(first, null, p);
 		}
-		
+
 		@Override
 		public String midbody() {
 			return "exceeded track speed limit and derailed";

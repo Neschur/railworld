@@ -18,44 +18,57 @@ package net.kolls.railworld.tc;
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-import net.kolls.railworld.*;
-import net.kolls.railworld.segment.LUSegment;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.Hashtable;
+import java.util.Map;
 
-import javax.swing.*;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.JToggleButton;
+import javax.swing.SwingConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
-import java.util.*;
-import java.awt.event.*;
-import java.awt.*;
-
-import javax.swing.event.*;
+import net.kolls.railworld.Train;
+import net.kolls.railworld.TrainControl;
 
 /**
  * The standard user control.  Provides a panel with throttle, brake, etc.
- * 
+ *
  * @author Steve Kollmansberger
  *
  */
 public class UserControl extends TrainControl implements ItemListener, ChangeListener, ActionListener {
-	
+
 	private JSlider throttle;
 	private JToggleButton brake, follow;
 	private JButton reverse, split, unload, load, horn;
 
 
-	
-	
-	
+
+
+
 	@Override
 	public void attach(Train t) {
 		super.attach(t);
-		
-		
+
+
 		throttle = new JSlider(SwingConstants.VERTICAL, 0, Train.MAX_THROTTLE, 0);
 		// create slider labels
 		Hashtable<Integer,JLabel> h = new Hashtable<Integer,JLabel>();
 		h.put (new Integer (0), new JLabel("IDLE"));
-		
-		for (int i = 1; i <= Train.MAX_THROTTLE; i++) 
+
+		for (int i = 1; i <= Train.MAX_THROTTLE; i++)
 			h.put (new Integer (i), new JLabel(Integer.toString(i)+" ("+Integer.toString(i*(Train.MAX_SPEED_MPH/Train.MAX_THROTTLE))+" MPH)"));
 		throttle.setLabelTable(h);
 		throttle.setPaintLabels(true);
@@ -66,14 +79,14 @@ public class UserControl extends TrainControl implements ItemListener, ChangeLis
 
 		add(Box.createRigidArea(new Dimension(0,5)));
 		add(Box.createVerticalGlue());
-		
+
 		JPanel cp = new JPanel();
 		cp.setLayout(new GridLayout(4,2));
-		
+
 		brake = new JToggleButton("BRAKE");
 		//brake.setEnabled(false);
 		brake.addItemListener(this);
-		
+
 		//add(center(brake));
 		cp.add(brake);
 
@@ -92,27 +105,27 @@ public class UserControl extends TrainControl implements ItemListener, ChangeLis
 		unload = new JButton("UNLOAD");
 		unload.addActionListener(this);
 		cp.add(unload);
-		
+
 		load = new JButton("LOAD");
 		load.addActionListener(this);
 		cp.add(load);
-		
+
 		horn = new JButton("HORN");
 		horn.addActionListener(this);
 		cp.add(horn);
-		
+
 		add(center(cp));
 		add(Box.createRigidArea(new Dimension(0,5)));
 
 		add(Box.createVerticalGlue());
 		add(Box.createVerticalGlue());
-		
-		
-				
-		
 
-	}	
-	
+
+
+
+
+	}
+
 
 	private JPanel center(JComponent x) {
 		JPanel p = new JPanel();
@@ -122,21 +135,21 @@ public class UserControl extends TrainControl implements ItemListener, ChangeLis
 		p.add(Box.createHorizontalGlue());
 		return p;
 	}
-	
-	
+
+
 	@Override
 	public boolean process() { super.process(); return true; }
-	
-	
+
+
 	@Override
 	public void run() {
 		//try {
-		
-		
+
+
 		if (myT == null) return;
-		
+
 		super.run();
-		
+
 
 		if (myT.hasEngine() == false) {
 			throttle.setEnabled(false);
@@ -147,62 +160,65 @@ public class UserControl extends TrainControl implements ItemListener, ChangeLis
 
 		}
 
-		
+
 		throttle.setValue(myT.getThrottle());
 
 		brake.setSelected(myT.getBrake());
 		follow.setSelected(myT.followMe);
-		
-		
-		
-		
-		
+
+
+
+
+
 		if (myT.vel() > 0) {
-			reverse.setEnabled(false); 
+			reverse.setEnabled(false);
 			split.setEnabled(false);
 			unload.setEnabled(false);
 			load.setEnabled(false);
 		} else {
 			reverse.setEnabled(true);
-			
+
 			if (myT.array()[0] != selected) split.setEnabled(true);
-				else split.setEnabled(false);
-			
+			else split.setEnabled(false);
+
 			if (lable.length > 0) load.setEnabled(true);
-				else load.setEnabled(false);
+			else load.setEnabled(false);
 			if (ulable.length > 0) unload.setEnabled(true);
-				else unload.setEnabled(false);
-			
+			else unload.setEnabled(false);
+
 		}
-		
-		
+
+
 		revalidate();
 		setVisible(true);
-		//} catch (Exception e) { 
-//			e.printStackTrace();
-	//	}	
+		//} catch (Exception e) {
+		//			e.printStackTrace();
+		//	}
 	}
 
+	@Override
 	public void itemStateChanged(ItemEvent e) {
-    
-    	Object source = e.getItemSelectable();
 
-    	if (source == brake) { 
-			
-    		myT.setBrake( e.getStateChange() == ItemEvent.SELECTED);
-    	}
+		Object source = e.getItemSelectable();
+
+		if (source == brake) {
+
+			myT.setBrake( e.getStateChange() == ItemEvent.SELECTED);
+		}
 
 		if (source == follow) { myT.followMe = ( e.getStateChange() == ItemEvent.SELECTED); }
 	}
 
+	@Override
 	public void stateChanged(ChangeEvent e) {
 		Object source = e.getSource();
 
-    	if (source == throttle) {
+		if (source == throttle) {
 			myT.setThrottle(throttle.getValue());
 		}
 	}
 
+	@Override
 	public void actionPerformed(ActionEvent e) {
 		Object source = e.getSource();
 		if (source == reverse) {
@@ -214,27 +230,29 @@ public class UserControl extends TrainControl implements ItemListener, ChangeLis
 			myT.split = true;
 		}
 		if (source == load) {
-			
+
 			load();
 		}
-		
+
 		if (source == unload) {
-			
+
 			unload();
 		}
 		if (source == horn) {
-			
+
 			horn();
 		}
 	}
+	@Override
 	public void load(Map<String, String> data) {	}
+	@Override
 	public Map<String, String> save() {
 		return null;
 	}
-	
+
 	@Override
 	public String toString() { return "UserControl"; }
-	
-	
+
+
 }
 

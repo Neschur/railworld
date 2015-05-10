@@ -25,29 +25,33 @@ import net.kolls.railworld.Distance;
 
 /**
  * Covered hopper based on CSXT 225021
- * 
+ *
  * @author Steve Kollmansberger
  *
  */
 public class Coveredhopper extends AbstractCar {
 	// from CSXT 225021
 	private static final Distance d = new Distance(41, Distance.Measure.FEET);
-	
+
+	@Override
 	public Color color() {
 		return Color.green;
 	}
 
-	
+
+	@Override
 	public Distance length() {
 		return d;
 	}
 
-	
+
+	@Override
 	public String show() {
 		return "Covered hopper";
 	}
 
-	
+
+	@Override
 	public int weight() {
 		if (loaded()) return 131; else return 26;
 	}

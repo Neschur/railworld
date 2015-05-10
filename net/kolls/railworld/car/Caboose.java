@@ -25,7 +25,7 @@ import net.kolls.railworld.Distance;
 
 /**
  * Red caboose based on C&P 90751
- * 
+ *
  * @author Steve Kollmansberger
  *
  */
@@ -33,14 +33,18 @@ public class Caboose extends AbstractCar {
 
 	// based on C&) 90751
 	private static final Distance d = new Distance(32, Distance.Measure.FEET);
-	
-	public Distance length() { return d; } 
+
+	@Override
+	public Distance length() { return d; }
 	@Override
 	public boolean loaded() { return true; }
-	public int weight() { return 20;} 
-	public Color color() { 
+	@Override
+	public int weight() { return 20;}
+	@Override
+	public Color color() {
 		return Color.red;
 	}
+	@Override
 	public String show() { return "Caboose"; }
 	@Override
 	public void load() { }

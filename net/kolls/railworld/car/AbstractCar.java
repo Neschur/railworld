@@ -18,8 +18,11 @@ package net.kolls.railworld.car;
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-import java.awt.*;
-import java.util.*;
+import java.awt.Color;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.Set;
 
 import net.kolls.railworld.Car;
 import net.kolls.railworld.RailSegment;
@@ -39,94 +42,104 @@ import net.kolls.railworld.RailSegment;
  * red: caboose
  * white: <reserved, l/u line color>
  * yellow: stock car
- * 
- * 
+ *
+ *
  */
 
 /**
  * AbstractCar contains some reasonable defaults to avoid repetition in creating standard cargo car types.
- * 
+ *
  * @author Steve Kollmansberger
  */
 public abstract class AbstractCar implements Car {
-	
+
 	/**
 	 * Indicates if the Car is currently loaded (with cargo) or not.
 	 * Should be false if the Car is not loadable.
 	 */
 	protected boolean isLoaded;
-	
-	
+
+
+	@Override
 	public boolean loaded() { return isLoaded; }
-	
-	
+
+
+	@Override
 	public void load() { isLoaded = true; }
-	
-	
+
+
+	@Override
 	public void unload() { isLoaded = false; }
-	
-	
+
+
+	@Override
 	public boolean isLoadable() { return true; }
 
 	private Set<RailSegment> segs;
-	
+
 	/**
 	 * Constructs a new Car.  Parameters of a Car are set using inheritance.
 	 *
 	 */
 	public AbstractCar() { segs = new HashSet<RailSegment>(); }
-	
-	
+
+
+	@Override
 	public final Set<RailSegment> segs() { return segs; }
 
-	
+
 	@Override
 	public final boolean equals(Object o) {
 		Car c;
 		if (o instanceof Car) c = (Car)o; else return false;
 		return (c.show().equals(show()) && c.loaded() == loaded());
 	}
-	
-	
-	
+
+
+
 	/**
 	 * By default,  if the car is not loaded, or not loadable, show a solid car.
 	 * Otherwise, show a white mid line.
 	 */
+	@Override
 	public Color midColor() {
 		if (isLoadable() && loaded() == false) return Color.white;
 		return color();
 	}
-	
-	
-	
+
+
+
 	@Override
 	public String toString() { return show(); }
-	
-	
-	
+
+
+
 	/**
 	 * Default implementation saves only whether or not the car is loaded.
 	 */
+	@Override
 	public Map<String, String> save() {
 		Hashtable<String, String> h = new Hashtable<String, String>();
 		if (isLoadable()) h.put("Loaded", loaded() ? "Yes" : "No");
 		return h;
-		
+
 	}
-	
+
 	/**
 	 * Default implementation only loads whether or not the car is loaded.
 	 */
+	@Override
 	public void load(Map<String, String> m) {
 		if (isLoadable()) {
 			if (m.get("Loaded").equals("Yes")) load(); else unload();
 		}
 	}
-	
+
+	@Override
 	public boolean canUserCreate() { return true; }
-	
-	public Object newInstance() { 
+
+	@Override
+	public Object newInstance() {
 		try {
 			return getClass().newInstance();
 		} catch (Exception ex) {
@@ -134,9 +147,10 @@ public abstract class AbstractCar implements Car {
 		}
 		return null;
 	}
-	
+
+	@Override
 	public boolean isEngine() {
 		return false;
 	}
-	
+
 }

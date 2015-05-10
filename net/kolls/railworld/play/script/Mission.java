@@ -27,24 +27,24 @@ import net.kolls.railworld.play.RailAccident;
  * A script which acts as an over-arching definer of play.
  * Although many scripts may run, only one mission is expected
  * at a time.
- * 
+ *
  * @author Steve Kollmansberger
  */
 public interface Mission extends Script {
 
 	/**
 	 * Informs the mission that a {@link RailAccident} has occurred.
-	 * 
+	 *
 	 * @param ra The accident instance.
 	 */
 	void railAccident(RailAccident ra);
-	
+
 	/**
 	 * Shows text/graphic describing the mission to the user.
 	 * @return a panel to display
 	 */
 	JPanel briefing();
-	
+
 	/**
 	 * Creates a script manager with scripts configured
 	 * as desired for this mission.  The mission
@@ -55,9 +55,9 @@ public interface Mission extends Script {
 
 	/**
 	 * Indicate what map should be used with this mission.
-	 * 
+	 *
 	 * @return Filename of the map to use
 	 */
 	String rwmFilename();
-	
+
 }

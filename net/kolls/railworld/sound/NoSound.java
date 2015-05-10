@@ -25,7 +25,7 @@ import net.kolls.railworld.Sound;
  * Provides an empty interface that pretends to play sounds, but does nothing.
  * This is useful if for some reason the sound systems all causing trouble.
  * This way we don't have to extend anything to have a "sound off" option.
- * 
+ *
  * @author Steve Kollmansberger
  *
  */

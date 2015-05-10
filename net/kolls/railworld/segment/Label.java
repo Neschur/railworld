@@ -47,7 +47,7 @@ import net.kolls.railworld.edit.SegmentEditPoint;
 
 /**
  * A label for displaying text.
- * 
+ *
  * @author Steve Kollmansberger
  *
  */
@@ -55,37 +55,37 @@ public class Label extends RailSegment {
 
 	@Override
 	public void recomp() { }
-	
+
 	/**
 	 * What the label says
 	 */
 	public String value;
-	
+
 	/**
 	 * The label's color
 	 */
 	public Color c;
-	
+
 	/**
 	 * How tall is the label text
 	 */
 	public Distance size;
-	
-	
+
+
 	/**
 	 * Rotation angle, in radians.
 	 */
 	public double angle;
-	
+
 	/**
 	 * The coordinates refer to upper-left or the center of the label?
 	 * By default this is true, meaning the coordinates are the center of the label.
 	 */
 	public boolean centered;
-	
+
 	/**
 	 * Create a label
-	 * 
+	 *
 	 * @param value Text value
 	 * @param size Font size
 	 * @param color Color
@@ -101,24 +101,24 @@ public class Label extends RailSegment {
 		pts[0] = pos;
 		this.angle = angle;
 		centered = true;
-		
+
 		dests = new RailSegment[0];
-		
+
 	}
-	
-	
-	
+
+
+
 	@Override
 	public boolean canErase() {
 		return true;
 	}
 
-	
+
 
 	@Override
 	public String mouseOver(Point2D pos) { return null; }
-	
-	
+
+
 	@Override
 	public RailSegment dest(RailSegment source) {
 		return null;
@@ -128,24 +128,24 @@ public class Label extends RailSegment {
 	public void draw(int z, Graphics2D gc) {
 		if (z == 1 && value.length() > 0) {
 			Point2D p2 = pts[0];
-			
+
 			RailCanvas.drawOutlineFont(gc, (int)p2.getX(), (int)p2.getY(), value, size.iPixels(), c, angle, centered);
-			
-			
+
+
 		}
 
-		
+
 
 	}
 
-	
+
 	private class LabelEditUndo extends AbstractUndoableEdit {
 		private Distance _size, _size2;
 		private Color _c, _c2;
 		private String _lbl, _lbl2;
 		private double _angle, _angle2;
 		private JPanel t;
-		
+
 		/**
 		 * Create a label edit undo.  This undo tracks all sorts of
 		 * label changes, like size, color, text, etc.
@@ -157,171 +157,177 @@ public class Label extends RailSegment {
 			_angle = angle;
 			t = mp;
 		}
-		
+
 		@Override
 		public void undo() throws CannotUndoException {
 			super.undo();
-			
+
 			_size2 = size;
 			_c2 = c;
 			_lbl2 = value;
 			_angle2 = angle;
-			
+
 			size = _size;
 			c = _c;
 			value = _lbl;
 			angle = _angle;
-			
+
 		}
 		@Override
 		public void redo() throws CannotRedoException {
 			super.redo();
-			
+
 			size = _size2;
 			c = _c2;
 			value = _lbl2;
 			angle = _angle2;
-			
+
 		}
 		@Override
 		public boolean addEdit(UndoableEdit anEdit) {
 			if (anEdit instanceof LabelEditUndo) {
 				LabelEditUndo x = (LabelEditUndo)anEdit;
 				if (x.t != t) return false;
-				
+
 				return true;
 			} else return false;
 		}
 		@Override
 		public String getPresentationName() { return "Configure Label"; }
 	}
-	
+
 	private JPanel mp;
-	
+
 	private void addColorButton(final Color cl) {
 		JButton tb = new JButton();
 		tb.setPreferredSize(new Dimension(24,24));
 		tb.setBackground(cl);
 		tb.addActionListener(new ActionListener() {
 
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				ec.addUndo(new LabelEditUndo());
 				c = cl;
 				ec.recomp();
 			}
-			
+
 		});
 		mp.add(tb);
-		
-		
+
+
 	}
-	
+
 	private void addSizeButton(final Distance px, final String lbl) {
 		JButton tb = new JButton(lbl);
-		
-		
+
+
 		tb.addActionListener(new ActionListener() {
 
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				ec.addUndo(new LabelEditUndo());
 				size = px;
 				ec.recomp();
 			}
-			
+
 		});
 		mp.add(tb);
 	}
-	
-	
+
+
 	@Override
 	public JPanel editPanel() {
 		JPanel gp = new JPanel();
 		gp.setLayout(new BoxLayout(gp, BoxLayout.PAGE_AXIS));
 		mp = new JPanel();
-		
-		
+
+
 		mp.add(new JLabel("Text:"));
-		
+
 		final JTextField txtlbl = new JTextField(value,10);
 		mp.add(txtlbl);
-		
-		
-		
+
+
+
 		txtlbl.addFocusListener(new FocusListener() {
 
+			@Override
 			public void focusGained(FocusEvent e) {	}
 
+			@Override
 			public void focusLost(FocusEvent e) {
 				ec.addUndo(new LabelEditUndo());
-				value = txtlbl.getText(); ec.recomp(); 
-				
+				value = txtlbl.getText(); ec.recomp();
+
 			}
-			
+
 		});
-		
+
 		gp.add(mp);
-		
-		
+
+
 		mp = new JPanel();
-		
-		
+
+
 		mp.add(new JLabel("Angle (deg):"));
-		
+
 		final JTextField txtangle = new JTextField(Double.toString(angle / Math.PI / 2.0 * 360.0),3);
 		mp.add(txtangle);
 		txtangle.addFocusListener(new FocusListener() {
 
+			@Override
 			public void focusGained(FocusEvent e) {	}
 
+			@Override
 			public void focusLost(FocusEvent e) {
-				
+
 				ec.addUndo(new LabelEditUndo());
 				try {
 					// we are asking in degrees but the system uses radians
 					angle = Double.valueOf(txtangle.getText()) / 360.0 * Math.PI * 2.0;
 				} catch (Exception e2) { }
-				
-				ec.recomp(); 
-				
+
+				ec.recomp();
+
 			}
-			
+
 		});
 
-		
-		
+
+
 		gp.add(mp);
-		
+
 		mp = new JPanel();
-		
-		
-		
-		
+
+
+
+
 		addColorButton(Color.cyan);
 		addColorButton(Color.magenta);
 		addColorButton(Color.pink);
 		addColorButton(Color.red);
 		addColorButton(Color.yellow);
 		addColorButton(Color.white);
-		
-		
-		
-		
-		
+
+
+
+
+
 		gp.add(mp);
-		
-		
+
+
 		mp = new JPanel();
 		mp.setLayout(new GridLayout(2,2));
-		
+
 		addSizeButton(new Distance(20, Distance.Measure.FEET), "S");
 		addSizeButton(new Distance(30, Distance.Measure.FEET), "M");
 		addSizeButton(new Distance(50, Distance.Measure.FEET), "L");
 		addSizeButton(new Distance(70, Distance.Measure.FEET), "XL");
-		
+
 		gp.add(mp);
-		
-		
-		
+
+
+
 		return gp;
 	}
 
@@ -347,36 +353,36 @@ public class Label extends RailSegment {
 	private static final Distance zd = new Distance(0, Distance.Measure.FEET);
 	@Override
 	public Distance length() { return zd; }
-	
-	
 
-	
-	
+
+
+
+
 	// label segment edit point class
-	
+
 	private class LSEP extends SegmentEditPoint {
-		
-		
+
+
 		/**
 		 * Create a label edit point
-		 * 
+		 *
 		 * @param t The label to edit
 		 */
 		public LSEP(Label t) {
 			super(new RailSegment[] {t}, 0, Color.green);
 		}
-		
+
 		@Override
 		public boolean isAnchorSource() {
 			return false;
-			
+
 		}
 		@Override
 		public RailSegment anchor(RailSegment r) {
 			return null;
 		}
-	
-	
+
+
 	}
 
 }

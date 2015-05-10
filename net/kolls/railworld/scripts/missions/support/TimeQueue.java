@@ -27,19 +27,19 @@ import java.util.PriorityQueue;
  * add items to happen at a given elapsed time.
  * The class wraps a priority queue and returns items
  * in order they should occur, but never before the desired time.
- * 
+ *
  * Note this this class is not synchronized or thread safe.
- * 
- * 
+ *
+ *
  * @param <T> Any type which is to be scheduled
- * @author Steve Kollmansberger 
+ * @author Steve Kollmansberger
  */
 public class TimeQueue<T> {
 
 	/**
 	 * Contains a value and an elapsed time that that value
 	 * should be returned.
-	 * 
+	 *
 	 * @author Steve Kollmansberger
 	 *
 	 * @param <T> Any type which is to be scheduled
@@ -49,12 +49,12 @@ public class TimeQueue<T> {
 		 * The elapsed time at which to execute this value.
 		 */
 		public long elapsed;
-		
+
 		/**
 		 * The value to return/execute.
 		 */
 		public T value;
-		
+
 		/**
 		 * Convenience constructor.
 		 * @param elapsed
@@ -68,24 +68,24 @@ public class TimeQueue<T> {
 		public int compareTo(TimeValue<T> o) {
 			return new Long(elapsed).compareTo(new Long(o.elapsed));
 		}
-		
+
 	}
-	
+
 	private PriorityQueue<TimeValue<T>> _queue;
-	
+
 	/**
 	 * Construct a new, empty queue.
 	 */
 	public TimeQueue() {
 		_queue = new PriorityQueue<TimeValue<T>>();
 	}
-	
+
 	/**
 	 * Retrieves and returns the next action to occur, if any.
 	 * The action is removed from the queue.
 	 * If the queue is empty, or the next action is not scheduled
 	 * to occur yet, the method returns null.
-	 * 
+	 *
 	 * @param elapsed The current elapsed time.
 	 * @return The next action whose time is prior to elapsed, or null.
 	 */
@@ -93,32 +93,32 @@ public class TimeQueue<T> {
 		TimeValue<T> val = _queue.peek();
 		if (val == null)
 			return null;
-		
+
 		if (val.elapsed <= elapsed) {
 			return _queue.poll();
 		}
-		
+
 		return null;
 	}
-	
+
 	/**
 	 * Enqueue an item.
-	 * 
+	 *
 	 * @param item
 	 */
 	public void add(TimeValue<T> item) {
 		_queue.add(item);
 	}
-	
+
 	/**
 	 * Enqueue an item to occur at a specified time.
-	 * 
+	 *
 	 * @param elapsed The time it should occur.
 	 * @param value The item value to occur
-	 * 
+	 *
 	 */
 	public void add(long elapsed, T value) {
 		_queue.add(new TimeValue<T>(elapsed, value));
 	}
-	
+
 }

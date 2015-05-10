@@ -29,16 +29,19 @@ import net.kolls.railworld.Train;
 
 /**
  * A red (stop) signal.
- * 
+ *
  * @author Steve Kollmansberger
  *
  */
 public class Red implements SignalProgram {
 
+	@Override
 	public void enter(Train t) { }
 
+	@Override
 	public void reacting(Train t) {	}
 
+	@Override
 	public Color status() {
 		return Color.red;
 	}
@@ -47,17 +50,21 @@ public class Red implements SignalProgram {
 	public String toString() {
 		return "Stop";
 	}
-	
+
+	@Override
 	public Icon icon() {
-		
+
 		return Images.sp_red;
-		
-		
+
+
 	}
 
+	@Override
 	public void load(Map<String, String> data) { }
 
+	@Override
 	public Map<String, String> save() {	return null; }
-	
+
+	@Override
 	public Object newInstance() { return new Red(); }
 }

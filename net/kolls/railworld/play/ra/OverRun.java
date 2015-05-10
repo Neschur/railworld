@@ -27,7 +27,7 @@ import net.kolls.railworld.play.RailAccident;
 /**
  * A track overrun.  Single train has exceeded end of track going faster
  * than joining speed.
- * 
+ *
  * @author Steve Kollmansberger
  *
  */
@@ -35,14 +35,14 @@ public class OverRun extends RailAccident {
 
 	/**
 	 * Create a track overrun.  Simply calls super constructor.
-	 * 
+	 *
 	 * @param first First train
 	 * @param p Location of accident
 	 */
 	public OverRun(Train first, Point2D p) {
 		super(first, null, p);
 	}
-	
+
 	@Override
 	public String midbody() {
 		return "ran off the end of the track";

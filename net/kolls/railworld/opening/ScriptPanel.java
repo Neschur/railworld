@@ -19,9 +19,6 @@ package net.kolls.railworld.opening;
  */
 
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import javax.swing.BoxLayout;
@@ -34,23 +31,23 @@ import net.kolls.railworld.play.script.ScriptManager;
 /**
  * A panel which allows the user to select which scripts they want to use.
  * Includes internal scripts and optionally scripts found in a local directory.
- * 
+ *
  * @author Steve Kollmansberger
  *
  */
 public class ScriptPanel extends JPanel {
-	
+
 	private CheckBoxList cbl;
-	
+
 	private ScriptManager curr;
-	
+
 	/**
 	 * Return a list of all scripts selected by the user.
-	 * 
+	 *
 	 * @return Array of scripts.
 	 */
 	public Script[] getScripts() {
-		
+
 		// wtf can't just cast cbl.getSelectedValues() into Script[]
 		Script[] scrs = new Script[cbl.getSelectedValues().length];
 
@@ -61,65 +58,65 @@ public class ScriptPanel extends JPanel {
 			if (i+1 < cbl.getSelectedValues().length)
 				selscrs += ",";
 		}
-		
-		
-		
+
+
+
 		// first, save selected scripts if desired
 		if (Options.getRemember()) {
 			Preferences prefs = Preferences.userNodeForPackage(Options.class);
 			prefs.put("Scripts", selscrs);
-			
+
 		}
 
 		return scrs;
 	}
-	
+
 	/**
 	 * Create a script panel.
 	 */
 	public ScriptPanel() {
 		super();
-		
+
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-		
-		
+
+
 		curr = ScriptManager.allScripts();
 		prep();
-		
-		
+
+
 	}
-	
-	
+
+
 	@Override
 	public void setEnabled(boolean value) {
 		super.setEnabled(value);
 		cbl.setEnabled(value);
 	}
-	
+
 	private void prep() {
 		removeAll();
-		
-		
+
+
 		cbl = new CheckBoxList(curr.toArray());
 		JScrollPane jsp = new JScrollPane(cbl);
 		add(jsp);
 		revalidate();
-		
+
 		Preferences prefs = Preferences.userNodeForPackage(Options.class);
 		boolean userSpec;
-		
-		
+
+
 		userSpec = Options.getRemember() && prefs.get("Scripts", null) != null;
-			
-		
+
+
 		if (userSpec) {
-			
-			
+
+
 			String[] selscrs = prefs.get("Scripts", "").split(",");
-			
-			
+
+
 			int[] selidx = new int[selscrs.length];
-			
+
 			for (int j = 0; j < selscrs.length; j++) {
 				for (int i = 0; i < curr.size(); i++) {
 					if (curr.get(i).toString().equals(selscrs[j])) {
@@ -131,10 +128,10 @@ public class ScriptPanel extends JPanel {
 			// only set if there's something to set
 			if (!(selscrs.length == 1 && selscrs[0].length() == 0))
 				cbl.setSelectedIndices(selidx);
-			
+
 		} else {
 			int sz = 0;
-			
+
 			for (int i = 0; i < curr.size(); i++)
 				if (curr.get(i).onByDefault())
 					sz++;
@@ -143,16 +140,16 @@ public class ScriptPanel extends JPanel {
 			for (int i = 0; i < curr.size(); i++)
 				if (curr.get(i).onByDefault())
 					sels[sz++] = i;
-			
+
 			cbl.setSelectedIndices(sels);
 		}
-		
+
 	}
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
 
 }

@@ -29,16 +29,19 @@ import net.kolls.railworld.Train;
 
 /**
  * A yellow (slow, 5 MPH) signal
- * 
+ *
  * @author Steve Kollmansberger
  *
  */
 public class Yellow implements SignalProgram {
 
+	@Override
 	public void enter(Train t) { }
 
+	@Override
 	public void reacting(Train t) {	}
 
+	@Override
 	public Color status() {
 		return Color.yellow;
 	}
@@ -47,17 +50,21 @@ public class Yellow implements SignalProgram {
 	public String toString() {
 		return "5 MPH";
 	}
+	@Override
 	public Icon icon() {
-		
-		return Images.sp_yellow;
-		
-		
-	}
-	
 
+		return Images.sp_yellow;
+
+
+	}
+
+
+	@Override
 	public void load(Map<String, String> data) { }
 
+	@Override
 	public Map<String, String> save() {	return null; }
-	
+
+	@Override
 	public Object newInstance() { return new Yellow(); }
 }

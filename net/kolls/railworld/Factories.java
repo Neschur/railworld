@@ -15,7 +15,6 @@ import net.kolls.railworld.segment.sp.Green;
 import net.kolls.railworld.segment.sp.GreenRed;
 import net.kolls.railworld.segment.sp.Red;
 import net.kolls.railworld.segment.sp.RedUTurn;
-import net.kolls.railworld.segment.sp.AbstractUL;
 import net.kolls.railworld.segment.sp.ULGreenRed;
 import net.kolls.railworld.segment.sp.ULUTurn;
 import net.kolls.railworld.segment.sp.Yellow;
@@ -44,7 +43,7 @@ import net.kolls.railworld.tc.UserControl;
 
 /**
  * Factories for various types.
- * 
+ *
  * @author Steve Kollmansberger
  */
 public class Factories {
@@ -53,19 +52,19 @@ public class Factories {
 	 * An extensible factory for all car types.
 	 */
 	public static ExtensibleFactory<Car> cars;
-	
+
 	/**
 	 * An extensible factory for all signal programs.
 	 */
 	public static ExtensibleFactory<SignalProgram> sps;
-	
+
 	/**
 	 * An extensible factory for all train controllers.
 	 */
 	public static ExtensibleFactory<TrainControl> controllers;
-	
-	
-	
+
+
+
 	/**
 	 * Create the extensible factories.
 	 * Add all built-in known types to the extensible factories.
@@ -83,7 +82,7 @@ public class Factories {
 		cars.addType( (new Intermodal()));
 		cars.addType( (new Autorack()));
 		cars.addType( (new Stockcar()));
-		
+
 		sps = new ExtensibleFactory<SignalProgram>();
 		sps.addType(new Green());
 		sps.addType(new Yellow());
@@ -93,17 +92,17 @@ public class Factories {
 		sps.addType(new RedUTurn());
 		sps.addType(new ULUTurn());
 		sps.addType(new ULGreenRed());
-		
-		
+
+
 		controllers = new ExtensibleFactory<TrainControl>();
 		controllers.addType(new UserControl());
 		controllers.addType(new AutoControl());
 		controllers.addType(new MixControl());
-		
-		
-		
-		
+
+
+
+
 	}
-	
-	
+
+
 }

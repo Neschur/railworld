@@ -18,15 +18,19 @@ package net.kolls.railworld.segment;
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-import net.kolls.railworld.*;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Paint;
+import java.awt.Stroke;
+import java.awt.geom.Line2D;
 
-import java.awt.geom.*;
-import java.awt.*;
+import net.kolls.railworld.RailSegment;
 
 
 /**
  * A hidden segment.  Trains on this segment are not drawn.
- * 
+ *
  * @author Steve Kollmansberger
  *
  */
@@ -35,14 +39,14 @@ public class HiddenSegment extends TrackSegment {
 	private Stroke dl;
 	/**
 	 * Create a hidden segment
-	 * 
+	 *
 	 * @param bg Begin segment
 	 * @param en End segment
 	 * @param crds Line coords
 	 */
 	public HiddenSegment(RailSegment bg, RailSegment en, Line2D crds) {
 		super(bg,en,crds);
-	
+
 	}
 	@Override
 	public void recomp() {
@@ -51,21 +55,21 @@ public class HiddenSegment extends TrackSegment {
 	}
 	@Override
 	public void draw(int z, Graphics2D gc) {
-		
+
 		Paint p = gc.getPaint();
 
-		
-		
+
+
 
 		// no base, dashed line
 		// for track
 		if (z == 2) {
-			
+
 			gc.setPaint(Color.black);
 			gc.setStroke(dl);
 			gc.draw(coords);
 		}
-		
+
 		gc.setPaint(p);
 	}
 	@Override

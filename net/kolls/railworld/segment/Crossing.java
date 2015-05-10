@@ -28,7 +28,7 @@ import net.kolls.railworld.Sounds;
 
 /**
  * At-grade crossing.  Plays crossing sound when train is present or on adjacent segment.
- * 
+ *
  * @author Steve Kollmansberger
  *
  */
@@ -36,7 +36,7 @@ public class Crossing extends TrackSegment {
 
 	/**
 	 * Create a crossing.
-	 * 
+	 *
 	 * @param bg Begin segment
 	 * @param en End segment
 	 * @param crds Line coords.
@@ -44,38 +44,38 @@ public class Crossing extends TrackSegment {
 	public Crossing(RailSegment bg, RailSegment en, Line2D crds) {
 		super(bg, en, crds);
 		wasPlaying = false;
-		
+
 	}
-	
+
 	private boolean hasTrains() {
-		
-		
-		
+
+
+
 		// if trains in our segment
 		if (trains().isEmpty() == false) return true;
-		
-		
+
+
 		// for adjacent segment, ensure they exist first
 		if (dests[0] != null && dests[0].trains().isEmpty() == false) return true;
 		if (dests[1] != null && dests[1].trains().isEmpty() == false) return true;
-		
-		
-		
+
+
+
 		return false;
 	}
-	
+
 	private boolean wasPlaying;
-	
-	
+
+
 	@Override
 	public void draw(int z, Graphics2D gc) {
-		
+
 		Paint p = gc.getPaint();
 
 
 		switch (z) {
 		case 1:
-			
+
 			gc.setPaint(Color.darkGray);
 			gc.setStroke(railBedStroke);
 			gc.draw(coords);
@@ -86,37 +86,37 @@ public class Crossing extends TrackSegment {
 
 			boolean h = hasTrains();
 
-			
+
 			if (h && wasPlaying == false) {
 				Sounds.crossing.loop();
 				wasPlaying = true;
-				
-			} 
+
+			}
 			if (h == false && wasPlaying) {
 				Sounds.crossing.stop();
 				wasPlaying = false;
-				
+
 			}
-			
-			
+
+
 			break;
 		default:
-			super.draw(z, gc);				
+			super.draw(z, gc);
 		}
 
-		
-		
+
+
 
 		gc.setPaint(p);
 
-		
+
 	}
-	
+
 	@Override
 	public boolean isDynamic() {
 		// although the appearance is not dynamic (at this time), we want to be assured
 		// that draw will be called so we can set the sound
 		return true;
-		
+
 	}
 }

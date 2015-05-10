@@ -18,17 +18,40 @@ package net.kolls.railworld.io;
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-import net.kolls.railworld.*;
-import net.kolls.railworld.car.*;
-import net.kolls.railworld.segment.*;
-
-import java.io.*;
-import java.util.*;
 import java.awt.Color;
-import java.awt.geom.*;
+import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.StringTokenizer;
+import java.util.Vector;
+
+import net.kolls.railworld.Car;
+import net.kolls.railworld.Distance;
+import net.kolls.railworld.RailCanvas;
+import net.kolls.railworld.RailSegment;
+import net.kolls.railworld.car.Autorack;
+import net.kolls.railworld.car.Boxcar;
+import net.kolls.railworld.car.Coveredhopper;
+import net.kolls.railworld.car.Flatcar;
+import net.kolls.railworld.car.Intermodal;
+import net.kolls.railworld.car.Openhopper;
+import net.kolls.railworld.car.Passenger;
+import net.kolls.railworld.car.Stockcar;
+import net.kolls.railworld.car.Tankcar;
+import net.kolls.railworld.segment.Crossing;
+import net.kolls.railworld.segment.EESegment;
+import net.kolls.railworld.segment.HiddenLUSegment;
+import net.kolls.railworld.segment.HiddenSegment;
+import net.kolls.railworld.segment.LUSegment;
+import net.kolls.railworld.segment.Label;
+import net.kolls.railworld.segment.Switch;
+import net.kolls.railworld.segment.TrackSegment;
 
 
-// ... d1 
+// ... d1
 // L10=702:1595:729:1622:0:9:61:11:10:2:0:0~ idx
 // L11=729:1622:787:1680:0:10:11:12:11 d3
 // L61=702:1595:679:1567:0:10:61:62:61:0 d2
@@ -81,9 +104,9 @@ public class YardReader {
 		return (val & flag) == flag;
 	}
 
-	
+
 	private static Car[] Cars(int luflags, boolean load, boolean unload) {
-		
+
 		Car[] oc = new Car[20];
 		int c = 0;
 
@@ -116,14 +139,14 @@ public class YardReader {
 			if (load) { oc[c] = new Stockcar(); oc[c].load(); c++; }
 			if (unload) { oc[c] = new Stockcar(); oc[c].unload(); c++; }
 		}
-		
+
 		if (flag(luflags, TANKCAR)) {
 			if (load) { oc[c] = new Tankcar(); oc[c].load(); c++; }
 			if (unload) { oc[c] = new Tankcar(); oc[c].unload(); c++; }
 		}
-		
-		
-		
+
+
+
 		// if we don't know what it is, we'll just make it a boxcar
 		if (flag(luflags, BOXCAR) || flag(luflags, REEFER) || c == 0) {
 			if (load) { oc[c] = new Boxcar(); oc[c].load(); c++; }
@@ -136,14 +159,14 @@ public class YardReader {
 
 		return nc;
 
-		
+
 
 	}
-	
+
 	/**
 	 * Reads a valid Yard Duty file.  Note that the format is not well enough understood to throw
 	 * appropriate format errors.
-	 * 
+	 *
 	 * @param f File to read from.
 	 * @param toBeFilled MetaData to fill.
 	 * @return An array of rail segments.
@@ -152,23 +175,23 @@ public class YardReader {
 	public static RailSegment[] read(File f, MetaData toBeFilled) throws IOException {
 		Vector<RailSegment> la = new Vector<RailSegment>();
 		RailSegment ridx, rd1, rd2, rd3, rd4, rsix;
-		
+
 		toBeFilled.comment = "Imported from Yard Duty";
 		toBeFilled.feetPerPixel = 3;
 		toBeFilled.zoom = 1;
 		toBeFilled.imgfile = f.getName().substring(0, f.getName().length() - 3) + "jpg"; // same file name, different ext
 		toBeFilled.ourFile = f;
-//		 set default distances
+		//		 set default distances
 		Distance.feetPerPixels = 3.0;
 		RailCanvas.zoom = 1.0;
-		
-		
-	
-	
-		BufferedReader br; 
-            	
 
-	
+
+
+
+		BufferedReader br;
+
+
+
 
 		String l;
 		int x;
@@ -177,285 +200,285 @@ public class YardReader {
 		int idx = 0;
 		int i;
 		int d1 = 0,d2 = 0,d3 = 0,d4 = 0, flags = 0, es = 0;
-		int cf = 0;		
+		int cf = 0;
 
 		boolean go;
 
 		StringTokenizer st;
-		
+
 		for (int z = 0; z < 3;z++) {
 			br = new BufferedReader(new FileReader(f));
 			go = false;
 			while (br.ready()) {
 
-			l = br.readLine();
-			if (l.equals("[Lines]")) {go = true; continue; }
+				l = br.readLine();
+				if (l.equals("[Lines]")) {go = true; continue; }
 
-			if (go == false) {
-				// in the header area
-				if (l.startsWith("YardDuty=")) {
-					toBeFilled.author = l.substring(9);
-				}
-				if (l.startsWith("YardName=")) {
-					toBeFilled.title = l.substring(9);
-				}
-				continue;
-			}
-			
-			
-			
-			i = l.indexOf('=');
-			if (i < 1) continue;
-
-			idx = new Integer(l.substring(1,i)).intValue(); // L#=
-
-
-			st = new StringTokenizer(l.substring(i+1),":",false);
-	
-		    while (st.hasMoreTokens()) {
-				try {
-					x = new Float(st.nextToken()).intValue();
-				} catch (Exception e) { cnt++; continue; }
-				
-				switch (cnt) {
-				case 0:
-					x1 = x;
-					break;
-				case 1:
-					y1 = x;
-					break;
-				case 2:
-					x2 = x;
-					break;
-				case 3:
-					y2 = x;
-					break;
-				case 4:
-					es = x;
-				case 5:
-					d1 = x;
-					break;
-				case 6:
-					d2 = x;
-					break;
-				case 7:
-					d3 = x;
-					break;
-				case 8:
-					d4 = x;
-					break;
-				case 9:
-					flags = x;
-					break;
-				case 10:
-					cf = x;
-					break;
-				default:
-				}	
-				cnt++;
-			}
-			
-		    cnt = 0;
-		    
-
-		    
-		    // check to see if this one is a label
-		    i = l.lastIndexOf(':');
-		    String lbl = l.substring(i);
-		    if (lbl.length() > 3) {
-		    	// it is a label
-		    	// woot
-
-		    	
-		    	
-		    	
-		    	if (z == 0) {
-			    	if (idx > la.size()) la.setSize(idx);
-			    	
-		    		Distance sz = null;
-		    		Color c = null;
-		    		double angle = 0;
-		    		
-		    		
-		    		
-		    		
-		    		
-		    		
-		    		
-		    		int cls = Integer.parseInt(lbl.substring(1,2));
-		    		if (cls >= 10) {
-		    			cls -= 10;
-		    			angle = Math.PI / 2.0;
-		    		}
-		    		switch (cls) {
-		    		case 0:
-		    			// building
-		    			sz = new Distance(30, Distance.Measure.FEET);
-		    			c = Color.yellow;
-		    			break;
-		    		case 1:
-		    			// track
-		    			sz = new Distance(30, Distance.Measure.FEET);
-		    			c = Color.white;
-		    			break;
-		    		case 2:
-		    			// street
-		    			sz = new Distance(30, Distance.Measure.FEET);
-		    			c = Color.cyan;
-		    			break;
-		    		case 3:
-		    			// area
-		    			sz = new Distance(50, Distance.Measure.FEET);
-		    			c = Color.yellow;
-		    			break;
-		    		case 4:
-		    			// city
-		    			sz = new Distance(70, Distance.Measure.FEET);
-		    			c = Color.white;
-		    			break;
-		    		case 5:
-		    			// railroad
-		    			sz = new Distance(30, Distance.Measure.FEET);
-		    			c = Color.red;
-		    			break;
-		    		}
-		    		
-		    		
-		    		
-		    		Point2D pos = new Point2D.Double( (x1+x2)/2, (y1+y2)/2);
-		    		
-		    		Label ls = new Label(lbl.substring(3), sz, c, pos, angle);
-		    		ls.centered = false;
-		    		la.add(idx, ls);
-		    		
-		    	} 
-		    	continue;
-		    }
-		    
-		    
-		    
-		    
-		    
-			
-		    // abort if road
-		    if (flag(flags, VEHICLE)) continue;
-		    
-			
-			
- 
-			if (z==0) {
-				if (idx > la.size()) la.setSize(idx);
-
-				Line2D myline = new Line2D.Float(x1,y1,x2,y2);
-			
-				if (flag(flags, HIDDEN) && ( flag(flags, LOADER) || flag(flags, UNLOADER) ) && cf != 0) {
-					la.add(idx, new HiddenLUSegment(null, null, myline, Cars(cf, flag(flags, UNLOADER), flag(flags, LOADER)), false) );
-				} else
-				if (flag(flags, HIDDEN)) {
-					la.add(idx, new HiddenSegment(null, null, myline));
-				} else
-				if ((flag(flags, LOADER) || flag(flags, UNLOADER)) && cf != 0) {
-					// 4 = unloader
-					// 64 = loader
-					// an unloader accepts loaded cars
-					// vice verse
-					la.add(idx, new LUSegment(null, null, myline, Cars(cf, flag(flags, UNLOADER), flag(flags, LOADER) ), false ));
-				} else
-				if (flag(flags, CROSSING)) {
-				
-					la.add(idx, new Crossing(null, null, myline));
-				} else
-				if (flags == 0 || flags == 2) {
-
-					if (es > 0)
-						la.add(idx, new EESegment(null, null, myline, "#"+Integer.toString(es)));
-					else
-						la.add(idx, new TrackSegment(null, null, myline));
-				} else {
-					la.add(idx, new TrackSegment(null, null, myline));
-					//System.out.println("Unknown flags: "+flags);
-				}
-				
-			}
-			
-			if (z==1) {
-				ridx = la.get(idx);
-				rd1 = la.get(d1);
-				rd3 = la.get(d3);
-				
-
-				if (idx != d1) {
-					((TrackSegment)ridx).setDest(TrackSegment.POINT_BEGIN, true, rd1);
-					if (ridx instanceof LUSegment) {
-						((LUSegment)ridx).setDrawAccept((rd1 instanceof LUSegment) == false);
+				if (go == false) {
+					// in the header area
+					if (l.startsWith("YardDuty=")) {
+						toBeFilled.author = l.substring(9);
 					}
+					if (l.startsWith("YardName=")) {
+						toBeFilled.title = l.substring(9);
+					}
+					continue;
 				}
 
-				if (idx != d3)
-				((TrackSegment)ridx).setDest(TrackSegment.POINT_END, true, rd3);
-			}
-			if (z==2) {
-				ridx = la.get(idx);
-				rd1 = la.get(d1);
-				rd2 = la.get(d2);
-				rd3 = la.get(d3);
-				rd4 = la.get(d4);
 
-				if (d2 != idx) {
-					// create switch
-					int six = la.size() + 1;
-					la.setSize(six);
-					
-					rsix = new Switch(ridx, rd1, rd2, new Point2D.Float(x1,y1));
-					
-					la.add(six, rsix);
 
-					rd1.update(ridx, rsix);
-					
-					ridx.update(rd1, rsix);
-		
-					
-					rd2.update(ridx, rsix); // weirdness
-					
-					
+				i = l.indexOf('=');
+				if (i < 1) continue;
+
+				idx = new Integer(l.substring(1,i)).intValue(); // L#=
+
+
+				st = new StringTokenizer(l.substring(i+1),":",false);
+
+				while (st.hasMoreTokens()) {
+					try {
+						x = new Float(st.nextToken()).intValue();
+					} catch (Exception e) { cnt++; continue; }
+
+					switch (cnt) {
+					case 0:
+						x1 = x;
+						break;
+					case 1:
+						y1 = x;
+						break;
+					case 2:
+						x2 = x;
+						break;
+					case 3:
+						y2 = x;
+						break;
+					case 4:
+						es = x;
+					case 5:
+						d1 = x;
+						break;
+					case 6:
+						d2 = x;
+						break;
+					case 7:
+						d3 = x;
+						break;
+					case 8:
+						d4 = x;
+						break;
+					case 9:
+						flags = x;
+						break;
+					case 10:
+						cf = x;
+						break;
+					default:
+					}
+					cnt++;
 				}
-				if (d4 != idx) {
-					// create switch
-					int six = la.size() + 1;
-					la.setSize(six);
-					
-					rsix = new Switch(ridx, rd3, rd4, new Point2D.Float(x2,y2));
-					
-					la.add(six, rsix);
 
-					rd3.update(ridx, rsix);
-					
-					ridx.update(rd3, rsix);
-		
-					
-					rd4.update(ridx, rsix); 
-					
-					
+				cnt = 0;
+
+
+
+				// check to see if this one is a label
+				i = l.lastIndexOf(':');
+				String lbl = l.substring(i);
+				if (lbl.length() > 3) {
+					// it is a label
+					// woot
+
+
+
+
+					if (z == 0) {
+						if (idx > la.size()) la.setSize(idx);
+
+						Distance sz = null;
+						Color c = null;
+						double angle = 0;
+
+
+
+
+
+
+
+						int cls = Integer.parseInt(lbl.substring(1,2));
+						if (cls >= 10) {
+							cls -= 10;
+							angle = Math.PI / 2.0;
+						}
+						switch (cls) {
+						case 0:
+							// building
+							sz = new Distance(30, Distance.Measure.FEET);
+							c = Color.yellow;
+							break;
+						case 1:
+							// track
+							sz = new Distance(30, Distance.Measure.FEET);
+							c = Color.white;
+							break;
+						case 2:
+							// street
+							sz = new Distance(30, Distance.Measure.FEET);
+							c = Color.cyan;
+							break;
+						case 3:
+							// area
+							sz = new Distance(50, Distance.Measure.FEET);
+							c = Color.yellow;
+							break;
+						case 4:
+							// city
+							sz = new Distance(70, Distance.Measure.FEET);
+							c = Color.white;
+							break;
+						case 5:
+							// railroad
+							sz = new Distance(30, Distance.Measure.FEET);
+							c = Color.red;
+							break;
+						}
+
+
+
+						Point2D pos = new Point2D.Double( (x1+x2)/2, (y1+y2)/2);
+
+						Label ls = new Label(lbl.substring(3), sz, c, pos, angle);
+						ls.centered = false;
+						la.add(idx, ls);
+
+					}
+					continue;
 				}
-				
-			}
-			
 
 
-			
-			
+
+
+
+
+				// abort if road
+				if (flag(flags, VEHICLE)) continue;
+
+
+
+
+				if (z==0) {
+					if (idx > la.size()) la.setSize(idx);
+
+					Line2D myline = new Line2D.Float(x1,y1,x2,y2);
+
+					if (flag(flags, HIDDEN) && ( flag(flags, LOADER) || flag(flags, UNLOADER) ) && cf != 0) {
+						la.add(idx, new HiddenLUSegment(null, null, myline, Cars(cf, flag(flags, UNLOADER), flag(flags, LOADER)), false) );
+					} else
+						if (flag(flags, HIDDEN)) {
+							la.add(idx, new HiddenSegment(null, null, myline));
+						} else
+							if ((flag(flags, LOADER) || flag(flags, UNLOADER)) && cf != 0) {
+								// 4 = unloader
+								// 64 = loader
+								// an unloader accepts loaded cars
+								// vice verse
+								la.add(idx, new LUSegment(null, null, myline, Cars(cf, flag(flags, UNLOADER), flag(flags, LOADER) ), false ));
+							} else
+								if (flag(flags, CROSSING)) {
+
+									la.add(idx, new Crossing(null, null, myline));
+								} else
+									if (flags == 0 || flags == 2) {
+
+										if (es > 0)
+											la.add(idx, new EESegment(null, null, myline, "#"+Integer.toString(es)));
+										else
+											la.add(idx, new TrackSegment(null, null, myline));
+									} else {
+										la.add(idx, new TrackSegment(null, null, myline));
+										//System.out.println("Unknown flags: "+flags);
+									}
+
+				}
+
+				if (z==1) {
+					ridx = la.get(idx);
+					rd1 = la.get(d1);
+					rd3 = la.get(d3);
+
+
+					if (idx != d1) {
+						((TrackSegment)ridx).setDest(TrackSegment.POINT_BEGIN, true, rd1);
+						if (ridx instanceof LUSegment) {
+							((LUSegment)ridx).setDrawAccept((rd1 instanceof LUSegment) == false);
+						}
+					}
+
+					if (idx != d3)
+						((TrackSegment)ridx).setDest(TrackSegment.POINT_END, true, rd3);
+				}
+				if (z==2) {
+					ridx = la.get(idx);
+					rd1 = la.get(d1);
+					rd2 = la.get(d2);
+					rd3 = la.get(d3);
+					rd4 = la.get(d4);
+
+					if (d2 != idx) {
+						// create switch
+						int six = la.size() + 1;
+						la.setSize(six);
+
+						rsix = new Switch(ridx, rd1, rd2, new Point2D.Float(x1,y1));
+
+						la.add(six, rsix);
+
+						rd1.update(ridx, rsix);
+
+						ridx.update(rd1, rsix);
+
+
+						rd2.update(ridx, rsix); // weirdness
+
+
+					}
+					if (d4 != idx) {
+						// create switch
+						int six = la.size() + 1;
+						la.setSize(six);
+
+						rsix = new Switch(ridx, rd3, rd4, new Point2D.Float(x2,y2));
+
+						la.add(six, rsix);
+
+						rd3.update(ridx, rsix);
+
+						ridx.update(rd3, rsix);
+
+
+						rd4.update(ridx, rsix);
+
+
+					}
+
+				}
+
+
+
+
+
 			}
 			br.close();
 		}
-        	
-        	
-	
-	
-	
-	return (la.toArray(new RailSegment[1]));
+
+
+
+
+
+		return (la.toArray(new RailSegment[1]));
 
 	}
 
-	
+
 
 }

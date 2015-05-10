@@ -22,7 +22,7 @@ import net.kolls.railworld.Train;
 
 /**
  * This interface is used to receive some or all events regarding trains.
- * 
+ *
  * @author Steve Kollmansberger
  */
 public interface TrainActionListener {
@@ -31,7 +31,7 @@ public interface TrainActionListener {
 	 * Informs the script that a {@link Train} action has been requested and allows it to cancel
 	 *  the normal behavior.  Only instantanous actions are available here; actions like
 	 *  brake and throttle can be read via the state.
-	 *  
+	 *
 	 *  Behaviors:
 	 *  load: Occurs when one or more cars are going to be loaded
 	 *  unload: Occurs when one or more cars are going to be unloaded
@@ -41,12 +41,12 @@ public interface TrainActionListener {
 	 *  selected: Occurs when the train is selected. CANNOT BE CANCELED (return value ignored)
 	 *  deselected: Occurs when the train is deselected. CANNOT BE CANCELED (return value ignored)
 	 *  step: Occurs at each step. CANNOT BE CANCELED (return value ignored)
-	 *  
-	 * 
+	 *
+	 *
 	 * @param t The train involved
 	 * @param action The name of the action requested
 	 * @return Should the action be cancelled? (false is default, continue)
 	 */
 	boolean trainAction(Train t, String action);
-	
+
 }

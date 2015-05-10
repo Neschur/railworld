@@ -29,34 +29,41 @@ import net.kolls.railworld.Train;
 
 /**
  * A green (proceed) signal
- * 
+ *
  * @author Steve Kollmansberger
  *
  */
 public class Green implements SignalProgram {
 
+	@Override
 	public void enter(Train t) { }
 
+	@Override
 	public void reacting(Train t) {	}
 
+	@Override
 	public Color status() { return Color.green;	}
 
 	@Override
 	public String toString() {
 		return "Proceed";
 	}
-	
+
+	@Override
 	public Icon icon() {
-		
+
 		return Images.sp_green;
-		
-		
+
+
 	}
 
+	@Override
 	public void load(Map<String, String> data) { }
 
+	@Override
 	public Map<String, String> save() {	return null; }
-	
+
+	@Override
 	public Object newInstance() { return new Green(); }
 
 }

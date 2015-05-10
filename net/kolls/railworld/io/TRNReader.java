@@ -19,21 +19,37 @@ package net.kolls.railworld.io;
  */
 
 
-import net.kolls.railworld.*;
-import net.kolls.railworld.car.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.StringTokenizer;
+import java.util.Vector;
 
-import java.io.*;
-import java.util.*;
+import net.kolls.railworld.Car;
+import net.kolls.railworld.Train;
+import net.kolls.railworld.car.Autorack;
+import net.kolls.railworld.car.Boxcar;
+import net.kolls.railworld.car.Caboose;
+import net.kolls.railworld.car.Coveredhopper;
+import net.kolls.railworld.car.Engine;
+import net.kolls.railworld.car.Flatcar;
+import net.kolls.railworld.car.Intermodal;
+import net.kolls.railworld.car.Openhopper;
+import net.kolls.railworld.car.Passenger;
+import net.kolls.railworld.car.Stockcar;
+import net.kolls.railworld.car.Tankcar;
 
 
 /**
  * Reads Yard Duty TRN files to create a train.  All information is available except which entrance to use.
- * 
+ *
  * @author Steve Kollmansberger
  *
  */
 public class TRNReader {
-	
+
 	static final int SWITCHER = 1; // engine
 	static final int ROADPOWER = 2; // engine
 	static final int CABOOSE = 3;
@@ -62,11 +78,11 @@ public class TRNReader {
 	static final int LARGETANK = 26;
 	static final int SHORTCOVEREDHOPPER = 27;
 	static final int HCABOXCAR = 28;
-	
-	
-	private static Car createCar(int typeID, boolean loaded) 
+
+
+	private static Car createCar(int typeID, boolean loaded)
 	{
-		
+
 		Car c;
 		switch (typeID) {
 		case SWITCHER:
@@ -121,10 +137,10 @@ public class TRNReader {
 		default:
 			c = new Boxcar();
 			System.out.println("Unknown car type: "+typeID);
-	
-		
+
+
 		}
-		
+
 		if (c.isLoadable()) {
 			if (loaded) c.load(); else c.unload();
 		}
@@ -133,43 +149,43 @@ public class TRNReader {
 
 	/**
 	 * Read a train from a Yard Duty train file
-	 * 
+	 *
 	 * @param f The file to read from
 	 * @return The train created.
-	 * @throws FileNotFoundException 
-	 * @throws IOException 
-	 * 
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 *
 	 */
 	public static Train read(File f) throws FileNotFoundException, IOException {
 		Vector<Car> cs = new Vector<Car>();
-		
+
 		Train t;
-		
-		
-		
-		BufferedReader br; 
+
+
+
+		BufferedReader br;
 		StringTokenizer st;
 		String l, t0, t1;
-		
+
 		boolean reversed = false;
 		double spd = 20;
 		int throttle = Train.MAX_THROTTLE;
 		boolean brake = false;
 		int ti = -1, lu;
-		
+
 		br = new BufferedReader(new FileReader(f));
-		
+
 		while (br.ready()) {
 
 			l = br.readLine();
 			if (l.startsWith("[")) continue;
-			
+
 			st = new StringTokenizer(l,"=",false);
 
 			if (st.countTokens() != 2) continue;
 			t0 = st.nextToken();
 			t1 = st.nextToken();
-			
+
 			if (t0.equals("UseExit")) {
 				if (Integer.parseInt(t1) < 0) reversed = true;
 			}
@@ -177,7 +193,7 @@ public class TRNReader {
 				st = new StringTokenizer(t1,":",false);
 
 				spd = Double.parseDouble(st.nextToken());
-			
+
 			}
 			if (t0.equals("ThrottleSetting")) {
 				throttle = Integer.parseInt(t1);
@@ -185,7 +201,7 @@ public class TRNReader {
 			if (t0.equals("BrakeSetting")) {
 				if (Integer.parseInt(t1) > 4) brake = true;
 			}
-			
+
 			if (t0.equals("TypeID")) {
 				st = new StringTokenizer(t1,":",false);
 				ti = Integer.parseInt(st.nextToken());
@@ -198,11 +214,11 @@ public class TRNReader {
 				ti = -1;
 			}
 
-			
+
 		}
-		
+
 		br.close();
-		
+
 		t = new Train(cs.toArray(new Car[0]));
 		t.setVel(spd);
 		if (t.hasEngine())
@@ -210,6 +226,6 @@ public class TRNReader {
 		t.setBrake(brake);
 
 		return t;
-		
+
 	}
 }

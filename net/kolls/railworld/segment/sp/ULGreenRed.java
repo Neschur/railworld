@@ -33,12 +33,12 @@ import net.kolls.railworld.Train;
 public class ULGreenRed extends AbstractUL {
 
 	private Color col = Color.red;
-	
+
 	@Override
 	protected void FinishedUL(Train t) {
 		col = Color.green;
 	}
-	
+
 	@Override
 	public void enter(Train t) { col = Color.red; }
 

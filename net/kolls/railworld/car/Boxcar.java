@@ -19,27 +19,31 @@ package net.kolls.railworld.car;
  */
 
 
-import net.kolls.railworld.Distance;
+import java.awt.Color;
 
-import java.awt.*;
+import net.kolls.railworld.Distance;
 
 // based on COP 7274
 /**
  * Boxcar based on COP 7274
- * 
+ *
  * @author Steve Kollmansberger
  */
 public class Boxcar extends AbstractCar {
-	
+
 	private static final Distance d = new Distance(60, Distance.Measure.FEET);
-	
+
+	@Override
 	public Distance length() { return d; } // 60 ft
-	
+
+	@Override
 	public int weight() { if (loaded()) return 110; else return 30;} // loaded gross 220Klbs
-		// tare weight 61.8 Klbs
-	public Color color() { 
+	// tare weight 61.8 Klbs
+	@Override
+	public Color color() {
 		return Color.pink.darker();
 	}
+	@Override
 	public String show() { return "Boxcar"; }
-	
+
 }

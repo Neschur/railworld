@@ -31,18 +31,21 @@ import net.kolls.railworld.Train;
 
 /**
  * A signal which allows one train at 5 MPH, then turns red.
- * 
+ *
  * @author Steve Kollmansberger
  *
  */
 public class YellowRed implements SignalProgram {
 
 	private Color col = Color.yellow;
-	
+
+	@Override
 	public void enter(Train t) { col = Color.red; }
 
+	@Override
 	public void reacting(Train t) {	}
 
+	@Override
 	public Color status() {
 		return col;
 	}
@@ -51,25 +54,29 @@ public class YellowRed implements SignalProgram {
 	public String toString() {
 		return "5 MPH One Train";
 	}
-	
-	public Icon icon() {
-		
-		return Images.sp_yellowred;
-		
-		
-	}
-	
 
-	public void load(Map<String, String> data) { 
+	@Override
+	public Icon icon() {
+
+		return Images.sp_yellowred;
+
+
+	}
+
+
+	@Override
+	public void load(Map<String, String> data) {
 		col = new Color(Integer.parseInt(data.get("color")));
 	}
 
-	public Map<String, String> save() {	
+	@Override
+	public Map<String, String> save() {
 		Hashtable<String, String> h = new Hashtable<String, String>();
 		h.put("color", Integer.toString(col.getRGB()));
 		return h;
 	}
-	
+
+	@Override
 	public Object newInstance() { return new YellowRed(); }
 
 }

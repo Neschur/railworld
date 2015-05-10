@@ -19,13 +19,15 @@ package net.kolls.railworld.tuic;
  */
 
 
-import net.kolls.railworld.*;
+import java.awt.geom.Line2D;
 
-import java.awt.geom.*;
+import net.kolls.railworld.CLoc;
+import net.kolls.railworld.Car;
+import net.kolls.railworld.TrainUIController;
 
 /**
  * Finds the empty point of a train.  Used, for example, for reversing a train.
- * 
+ *
  * @author Steve Kollmansberger
  *
  */
@@ -35,7 +37,7 @@ public class TrainEndPointFinder extends TrainUIController {
 	 * The endpoint, once found.
 	 */
 	public CLoc p;
-	
+
 	@Override
 	public void segment(Car c, Line2D l) { }
 	@Override

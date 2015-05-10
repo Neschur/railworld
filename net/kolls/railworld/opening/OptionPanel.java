@@ -31,7 +31,7 @@ import javax.swing.JPanel;
  * of items, each item with a label on the left and the control on the right.
  * The controls will be aligned so they all start on the same boundary,
  * and a small margin will be added.
- * 
+ *
  * @author Steve Kollmansberger
  *
  */
@@ -40,44 +40,44 @@ public class OptionPanel extends JPanel {
 	private GridBagConstraints c;
 	private GridBagConstraints cl;
 	private GridBagLayout gridbag;
-	
+
 	/**
 	 * Construct a new option panel with default margins.
 	 *
 	 */
 	public OptionPanel() {
 		super();
-		
+
 		gridbag = new GridBagLayout();
 		setLayout(gridbag);
-		
+
 		c = new GridBagConstraints();
-		
+
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		c.anchor = GridBagConstraints.WEST;
 		c.insets = new Insets(3,3,3,3);
-		
+
 		cl = new GridBagConstraints();
 		cl.anchor = GridBagConstraints.EAST;
 	}
-	
+
 	/**
 	 * Adds a new entry to this option panel.  The label will appear on the left,
 	 * and the given control on the right.
-	 * 
+	 *
 	 * @param label A label for this control
 	 * @param control A control to display
 	 */
 	public void addLabeledControl(String label, Component control) {
-		
-		
+
+
 		JLabel l;
 		l = new JLabel(label);
 		gridbag.setConstraints(l, cl);
 		add(l);
-		
+
 		gridbag.setConstraints(control, c);
 		add(control);
 	}
-	
+
 }

@@ -21,30 +21,34 @@ package net.kolls.railworld.sound;
 
 import java.net.URL;
 
-import javax.sound.sampled.*;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.BooleanControl;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.DataLine;
 import javax.swing.SwingUtilities;
-
 
 import net.kolls.railworld.Sound;
 
 /**
  * Java Sound API (the standard Java approach to sound)
- * 
+ *
  * @author Steve Kollmansberger
  *
  */
 public class JSSound extends Sound {
 	private Clip myClip;
-	
+
 	private DataLine.Info info;
 	private AudioInputStream stream;
 	private AudioFormat format;
-	
+
 	private boolean rst;
-	
+
 	// Port.Info SPEAKER
 
-	
+
 	/**
 	 * Create a Java sound clip.
 	 * @param filen URL of sound source
@@ -53,39 +57,39 @@ public class JSSound extends Sound {
 	public JSSound(URL filen, boolean restart) {
 
 		rst = restart;
-		
+
 		try {
 
-//		File myFile = new File (".", filen);
-		
-		stream = AudioSystem.getAudioInputStream(filen);
-		format = stream.getFormat();
-		
+			//		File myFile = new File (".", filen);
 
-		info = new DataLine.Info(
-                                          Clip.class,
-                                          format,
-                                          format.getFrameSize()*1000
-                                          /*((int) stream.getFrameLength() *
+			stream = AudioSystem.getAudioInputStream(filen);
+			format = stream.getFormat();
+
+
+			info = new DataLine.Info(
+					Clip.class,
+					format,
+					format.getFrameSize()*1000
+					/*((int) stream.getFrameLength() *
                                               format.getFrameSize())*/);
 
 
-		
-		myClip = (Clip)AudioSystem.getLine(info);
-		
-		
-		
-		//ln.open(stream, format.getFrameSize()*12000);
-		myClip.open(stream);
-		System.out.println(myClip.getBufferSize());
-		
-		loopcnt = 0;
-		frozen = false;
-		fzlc = 0;
+
+			myClip = (Clip)AudioSystem.getLine(info);
+
+
+
+			//ln.open(stream, format.getFrameSize()*12000);
+			myClip.open(stream);
+			System.out.println(myClip.getBufferSize());
+
+			loopcnt = 0;
+			frozen = false;
+			fzlc = 0;
 
 		} catch (Exception e) { System.out.println("Unable to prepare sound "+filen+": "+e); }
 	}
-	
+
 	@Override
 	public boolean canPlay() {
 		return myClip.isOpen();
@@ -93,8 +97,8 @@ public class JSSound extends Sound {
 
 	@Override
 	public void play() {
-		
-		
+
+
 		loopcnt = 0;
 		myClip.loop(0);
 
@@ -133,28 +137,29 @@ public class JSSound extends Sound {
 		if (loopcnt == 1) {
 			loopcnt = 0;
 			myClip.loop(0);
-			
+
 			myClip.setFramePosition(myClip.getFrameLength()-1);
 			return;
 		}
-		
-		
+
+
 		SwingUtilities.invokeLater(new Runnable() {
 
+			@Override
 			public void run() {
 				BooleanControl bc = (BooleanControl)myClip.getControl(BooleanControl.Type.MUTE);
 				bc.setValue(true);
 			}
-			
+
 		});
-		
-		
-		
-		
+
+
+
+
 		//myClip.setFramePosition(myClip.getFrameLength());
-		//myClip.stop();		
-		
-		
+		//myClip.stop();
+
+
 	}
 
 	@Override
@@ -162,5 +167,5 @@ public class JSSound extends Sound {
 		return myClip.isActive();
 	}
 
-	
+
 }

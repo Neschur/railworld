@@ -19,50 +19,54 @@ package net.kolls.railworld.tuic;
  */
 
 
-import net.kolls.railworld.*;
+import java.awt.BasicStroke;
+import java.awt.Graphics2D;
+import java.awt.Stroke;
+import java.awt.geom.Line2D;
 
-import java.awt.*;
-import java.awt.geom.*;
+import net.kolls.railworld.CLoc;
+import net.kolls.railworld.Car;
+import net.kolls.railworld.TrainUIController;
 
 /**
- * Paints a mini version of the train on the mini viewer.  
- * 
+ * Paints a mini version of the train on the mini viewer.
+ *
  * @author Steve Kollmansberger
  *
  */
 public class TrainMiniPainter extends TrainUIController {
 
 	private Stroke ms;
-	
-	
+
+
 	private Graphics2D g;
-	
-	
-	
+
+
+
 	private double xscale, yscale;
-	
+
 	/**
-	 * 
+	 *
 	 * @param mg The graphics context to draw on
 	 * @param xs The X scale of the miniviewer
 	 * @param ys The Y scale of the miniviewer
 	 */
-	public TrainMiniPainter(Graphics2D mg, double xs, double ys) { 
+	public TrainMiniPainter(Graphics2D mg, double xs, double ys) {
 		// paint all cars
 		ms = new BasicStroke(2.0f);
-		
-		
-		
+
+
+
 		g = mg;
-		
-		
+
+
 
 		xscale = xs;
 		yscale = ys;
 	}
 	@Override
 	public void segment(Car c, Line2D l) {
-		
+
 
 		g.setPaint(c.color());
 
@@ -72,7 +76,7 @@ public class TrainMiniPainter extends TrainUIController {
 		g.setStroke(ms);
 		g.draw(nl);
 
-		
+
 	}
 	@Override
 	public void car(Car c, CLoc b, CLoc pos) { }

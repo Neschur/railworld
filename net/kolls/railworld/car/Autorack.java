@@ -25,32 +25,36 @@ import net.kolls.railworld.Distance;
 
 /**
  * Autorack car based on TTGX 990770
- * 
+ *
  * @author Steve Kollmansberger
  *
  */
 public class Autorack extends AbstractCar {
 
 	// based on TTGX 990770
-	
+
 	private static final Distance d = new Distance(93,  Distance.Measure.FEET);
-	
-	
+
+
+	@Override
 	public Color color() {
 		return Color.magenta;
 	}
 
-	
+
+	@Override
 	public Distance length() {
 		return d;
 	}
 
-	
+
+	@Override
 	public String show() {
 		return "Auto rack";
 	}
 
-	
+
+	@Override
 	public int weight() {
 		if (loaded()) return 89; else return 51;
 	}

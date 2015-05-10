@@ -19,30 +19,33 @@ package net.kolls.railworld.tuic;
  */
 
 
-import net.kolls.railworld.*;
+import java.awt.geom.Line2D;
 
-import java.awt.geom.*;
+import net.kolls.railworld.CLoc;
+import net.kolls.railworld.Car;
+import net.kolls.railworld.Distance;
+import net.kolls.railworld.TrainUIController;
 
 /**
- * Given a position on the map, determine if it is within a train.  
+ * Given a position on the map, determine if it is within a train.
  * If so, indicate which car it falls within.
- * 
- * 
+ *
+ *
  * @author Steve Kollmansberger
  *
  */
 public class TrainClickTest extends TrainUIController {
 	private int x, y;
-	
+
 	/**
 	 * If the position falls within a train, this will be set to the Car it hits.
 	 * Otherwise null.
 	 */
 	public Car cc;
-	
+
 	/**
 	 * Creates a new TrainClickTest for a given position.
-	 * 
+	 *
 	 * @param vx The X coordinate on the map
 	 * @param vy The Y coordinate on the map
 	 */
@@ -53,15 +56,15 @@ public class TrainClickTest extends TrainUIController {
 		pd = Math.pow(clickDist.pixels(), 2.0);
 	}
 	private double pd;
-	
+
 	// give us some leeway (1 ft)
 	private static final Distance clickDist = new Distance(Car.CAR_WIDTH.feet()+1, Distance.Measure.FEET);
-	
+
 	@Override
 	public void segment(Car c, Line2D l) {
 		// to test if we click on the line
 
-		
+
 		if (l.ptSegDistSq(x, y) <= pd) cc = c;
 
 	}

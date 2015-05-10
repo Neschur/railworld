@@ -24,7 +24,7 @@ import javax.swing.filechooser.FileFilter;
 
 /**
  * Selects Yard Duty train (TRN) files.
- * 
+ *
  * @author Steve Kollmansberger
  *
  */
@@ -33,13 +33,13 @@ public class TRNFilter extends FileFilter {
 	@Override
 	public boolean accept(File f) {
 		if (f.isDirectory()) {
-            return true;
-        }
+			return true;
+		}
 
-        String u = f.getName().toUpperCase(); 
-        if (u.endsWith(".TRN")) return true;
-        
-        return false;
+		String u = f.getName().toUpperCase();
+		if (u.endsWith(".TRN")) return true;
+
+		return false;
 	}
 
 	@Override

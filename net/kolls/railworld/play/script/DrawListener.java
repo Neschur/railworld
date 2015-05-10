@@ -23,14 +23,14 @@ import java.awt.Rectangle;
 
 /**
  * The interface used by a script to indicate it is interested in handling draw events.
- * 
+ *
  * @author Steve Kollmansberger
  */
 public interface DrawListener {
 	/**
 	 * Called at every step to allow the script to draw on the map.  This is called
 	 * after all z-levels for segments.
-	 * 
+	 *
 	 * @param gc  Graphics context of the image to draw on.
 	 * @param onScreen What portion (coordinates) of the image are on screen.
 	 */

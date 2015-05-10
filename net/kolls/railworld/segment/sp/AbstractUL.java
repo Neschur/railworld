@@ -1,12 +1,8 @@
 package net.kolls.railworld.segment.sp;
 
-import java.awt.Color;
 import java.util.Date;
 import java.util.Map;
 
-import javax.swing.Icon;
-
-import net.kolls.railworld.Images;
 import net.kolls.railworld.SignalProgram;
 import net.kolls.railworld.Train;
 
@@ -31,14 +27,14 @@ import net.kolls.railworld.Train;
 
 /**
  * Unloads, loads, and then performs some action
- * 
+ *
  * @author Steve Kollmansberger
  */
 public abstract class AbstractUL implements SignalProgram {
 
 	private int stage = 0;
 	private Date current;
-	
+
 	@Override
 	public void reacting(Train t) {
 		if (t.vel() == 0) {
@@ -67,28 +63,28 @@ public abstract class AbstractUL implements SignalProgram {
 					FinishedUL(t); // do whatever
 				}
 				break;
-			
+
 			};
-			
-		
+
+
 		} else stage = 0;
-		
-		
+
+
 	}
-	
+
 	protected abstract void FinishedUL(Train t);
-	
+
 	// default implementations
-	
+
 	@Override
 	public void enter(Train t) { }
-	
-	
+
+
 	@Override
 	public void load(Map<String, String> data) { }
-	
+
 	@Override
-	public Map<String, String> save() {	
+	public Map<String, String> save() {
 		return null;
 	}
 }

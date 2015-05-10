@@ -25,7 +25,7 @@ import net.kolls.railworld.Distance;
 
 /**
  * Non-intermodal flat/centerbeam car.
- * 
+ *
  * @author Steve Kollmansberger
  *
  */
@@ -33,23 +33,27 @@ public class Flatcar extends AbstractCar {
 
 	// from GATX non-intermodal flatcars and railcar photos centerbeam flat
 	private static final Distance d = new Distance(73, Distance.Measure.FEET);
-	
-	
+
+
+	@Override
 	public Color color() {
 		return Color.orange;
 	}
 
-	
+
+	@Override
 	public Distance length() {
 		return d;
 	}
 
-	
+
+	@Override
 	public String show() {
 		return "Centerbeam Car";
 	}
 
 
+	@Override
 	public int weight() {
 		if (loaded()) return 15; else return 115;
 	}

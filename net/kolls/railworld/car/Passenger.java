@@ -25,34 +25,38 @@ import net.kolls.railworld.Distance;
 
 /**
  * Passenger car based on Amtrak Superliner
- * 
+ *
  * @author Steve Kollmansberger
  *
  */
 public class Passenger extends AbstractCar {
 
 	// based on  Amtrak superliner
-	
-	private static final Distance d = new Distance(85, Distance.Measure.FEET);
-	
 
+	private static final Distance d = new Distance(85, Distance.Measure.FEET);
+
+
+	@Override
 	public Color color() {
 		return Color.lightGray;
-		
+
 	}
 
 
+	@Override
 	public Distance length() {
 		return d;
-		
+
 	}
 
 
+	@Override
 	public String show() {
 		return "Passenger";
 	}
 
 
+	@Override
 	public int weight() {
 		if (loaded()) return 85; else return 75;	} // 150Klbs empty
 

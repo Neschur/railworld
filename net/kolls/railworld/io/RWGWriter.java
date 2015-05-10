@@ -24,8 +24,8 @@ import java.io.File;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -49,7 +49,7 @@ import org.w3c.dom.Element;
 /**
  * Saves an in-progress game (position, zoom, selected train, and all trains).
  * It requires the map to go with it
- * 
+ *
  * @author Steve Kollmansberger
  *
  */
@@ -58,75 +58,75 @@ public class RWGWriter {
 		for (int i = 0; i < lines.length; i++) {
 			if (lines[i] == r) return i;
 		}
-		
-	
+
+
 		return -1;
 	}
-	
+
 	private static Element buildData(Document d, SaveLoad s) {
 		Map<String, String> data = s.save();
-		
+
 		Element dt = d.createElement("Data");
 		dt.setAttribute("Type", s.toString());
 		if (data == null) return dt;
-		
+
 		Set<Entry<String,String>> kvps = data.entrySet();
-		
-		
+
+
 		Iterator<Entry<String,String>> kvs = kvps.iterator();
-		
+
 		while (kvs.hasNext()) {
 			Element e;
 			Entry<String,String> kv = kvs.next();
 			e = d.createElement("Item");
-			
+
 			e.setAttribute("Key", kv.getKey());
 			//e.setAttribute("Value", kv.getValue());
 			e.setTextContent(kv.getValue());
 			dt.appendChild(e);
-			
+
 		}
-		
+
 		return dt;
 	}
-	
+
 	private static Document buildDom(RailSegment[] lines, Trains trs, ScriptManager sm, MetaData md) throws Exception {
 		Document document;
-		
-			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder builder = factory.newDocumentBuilder();
-			document = builder.newDocument();
-		
+
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder builder = factory.newDocumentBuilder();
+		document = builder.newDocument();
+
 
 		Element root;
 		Element e;
 		Element q;
 		Element intr, cr;
-		
+
 		root = document.createElement("RailGame");
 		root.setAttribute("Version", "1.3");
 		document.appendChild(root);
 
 		e = document.createElement("Meta");
-		
+
 		e.setAttribute("Elapsed", Long.toString(md.elapsed));
-		
+
 		q = document.createElement("Map");
-		
+
 		q.setAttribute("Name", md.ourFile.getName());
 		e.appendChild(q);
-		
+
 		q = document.createElement("Visual");
-		
+
 		q.setAttribute("Zoom", Double.toString(md.zoom));
 		q.setAttribute("CenterX", Double.toString(md.centerX));
 		q.setAttribute("CenterY", Double.toString(md.centerY));
-		
+
 		e.appendChild(q);
 		root.appendChild(e);
-		
 
-		
+
+
 
 		e = document.createElement("Segments");
 		for (int j = 0; j < lines.length; j++) {
@@ -139,115 +139,115 @@ public class RWGWriter {
 			if (lines[j] instanceof Signal) {
 				q = document.createElement("Signal");
 				q.setAttribute("ID", Integer.toString(j));
-		
-				
+
+
 				q.appendChild(buildData( document, ((Signal)lines[j]).sp  ));
 				//q.setTextContent(Base64.encodeObject(((Signal)lines[j]).sp));
 				//q.appendChild(newChild)
-				
+
 				e.appendChild(q);
 			}
 		}
 		root.appendChild(e);
-		
-		
+
+
 		e = document.createElement("Trains");
-		
+
 		Iterator<Train> it = trs.iterator();
-		
+
 		try {
 			while (it.hasNext()) {
 				q = document.createElement("Train");
 				Train t = it.next();
 				q.setAttribute("Length", Integer.toString(t.array().length));
-				
-				
+
+
 				int rid = index(lines, t.pos.r);
 				int origid = index(lines, t.pos.orig);
-				
+
 				intr = document.createElement("Pos");
 				intr.setAttribute("RID", Integer.toString(rid));
 				intr.setAttribute("OrigID", Integer.toString(origid));
 				intr.setAttribute("Per", Double.toString(t.pos.per));
-				
+
 				q.appendChild(intr);
-				
+
 				intr = document.createElement("Control");
 				intr.setAttribute("Throttle", Integer.toString(t.getThrottle()));
 				intr.setAttribute("Brake", t.getBrake() ? "Yes" : "No");
 				intr.setAttribute("Velocity", Double.toString(t.vel()));
 				intr.setAttribute("Selected", trs.getSelectedTrain() == t ? "Yes" : "No");
-				
+
 				q.appendChild(intr);
 
 				intr = document.createElement("Cars");
-				
-				
+
+
 				for (int i = 0; i < t.array().length; i++) {
 					cr = document.createElement("Car");
 					cr.setAttribute("ID", Integer.toString(i));
 					cr.setAttribute("Selected", trs.getSelectedCar() == t.array()[i] ? "Yes" : "No");
-					
+
 					cr.appendChild(buildData(document, t.array()[i]));
 					/*cr.setAttribute("Type", t.array()[i].show());
 					if (t.array()[i].isLoadable())
 						cr.setAttribute("Loaded", t.array()[i].loaded() ? "Yes" : "No");
-					
-					
-					*/
+
+
+					 */
 					intr.appendChild(cr);
 				}
-				
+
 				q.appendChild(intr);
-				
-				
+
+
 				intr = document.createElement("Controller");
 				intr.appendChild(buildData( document, t.getController()  ));
 				//intr.setTextContent(Base64.encodeObject(t.getController()));
 				q.appendChild(intr);
-				
+
 				e.appendChild(q);
-				
+
 			}
 		} catch (ConcurrentModificationException ex) {
 			throw new Exception("Train list changed while attempting to save; try again.");
-			
+
 		}
-		
+
 		root.appendChild(e);
-		
+
 		e = document.createElement("Scripts");
-		
+
 		Iterator<Script> si = sm.iterator();
 		while (si.hasNext()) {
 			Script s = si.next();
-			
+
 			e.appendChild(buildData(document, s));
 		}
 		root.appendChild(e);
-		
+
 		return document;
-		
-		
+
+
 	}
-	
+
 	private static void save(Document d, File f) throws TransformerException {
-		
+
 		TransformerFactory factory = TransformerFactory.newInstance();
 		Transformer trans = factory.newTransformer();
 
-		
+
 		StreamResult sr = new StreamResult(f);
 
-		trans.transform(new DOMSource(d), sr);		
-		
-	
+		trans.transform(new DOMSource(d), sr);
+
+
 	}
 
 	/**
 	 * Saves the current game state (trains, dynamic track configuration, visual orientation)
 	 * to a Rail World Game file.
-	 * 
+	 *
 	 * @param la Array of rail segments to find both position IDs and track settings
 	 * @param trs Trains to save
 	 * @param sm The ScriptManager containing all scripts in use.
@@ -256,8 +256,8 @@ public class RWGWriter {
 	 * @throws Exception If save is unable to proceed, especially if trains is modified while saving
 	 */
 	public static void write(RailSegment[] la, Trains trs, ScriptManager sm, MetaData md, File f) throws Exception {
-		
+
 		save(buildDom(la, trs, sm, md), f);
 	}
-	
+
 }

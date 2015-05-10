@@ -18,14 +18,15 @@ package net.kolls.railworld.play;
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.awt.*;
+
 import javax.swing.JPanel;
-
-
 
 import net.kolls.railworld.Car;
 import net.kolls.railworld.Distance;
@@ -34,8 +35,8 @@ import net.kolls.railworld.tuic.TrainPainter;
 
 /**
  * Displays a train in a panel of a given width, perhaps using multiple lines to display the train.
- * 
- * 
+ *
+ *
  * @author Steve Kollmansberger
  *
  */
@@ -46,76 +47,76 @@ public class MultiLineTrainPanel extends JPanel {
 	 * and then ask the panel to be repainted.
 	 */
 	public ArrayList<Car> myVC;
-	
+
 	/**
 	 * Create a panel with the empty vector of cars.
 	 *
 	 */
 	public MultiLineTrainPanel() {
 		myVC = new ArrayList<Car>();
-		
-		
+
+
 	}
-	
+
 	@Override
 	public void paint(Graphics g) {
 		super.paint(g);
-		
-		
+
+
 		int width = getWidth() - 5;
-		
+
 		if (width < 1 || myVC.isEmpty()) return;
-		
+
 		int height = (int)(Car.CAR_WIDTH.pixels() * Distance.getDefaultZoom()), usedw = 0;
-		
-		
+
+
 		ArrayList<Train> ptrains = new ArrayList<Train>();
 		ArrayList<Car> ct = new ArrayList<Car>();
 		Iterator<Car> ic = myVC.iterator();
-		
-		
+
+
 		Car[] cr;
-		
+
 		while (ic.hasNext()) {
 			Car c = ic.next();
-			
+
 			if (c.length().pixels() * Distance.getDefaultZoom() + usedw + 5 > width) {
 				height += Car.CAR_WIDTH.pixels() * Distance.getDefaultZoom() * 1.5;
 				usedw = 0;
-				
+
 				// current ct and make it a train
 				cr = (ct.toArray(new Car[0]));
 				ptrains.add(new Train(cr));
 				ct.clear();
-					
-			} 
+
+			}
 			usedw += (c.length().pixels() + Car.DIST_BETWEEN_CARS.pixels()) * Distance.getDefaultZoom();
 			ct.add(c);
-			
-		
+
+
 		}
-		
+
 		//add remaining cars
 		cr = (ct.toArray(new Car[0]));
 		ptrains.add(new Train(cr));
-		
-		
+
+
 		Graphics2D ofg = (Graphics2D)g;
-		
+
 
 		ofg.setColor(Color.lightGray.brighter());
 		ofg.fillRect(0, 0, width, height);
-		
+
 		ofg.scale(Distance.getDefaultZoom(), Distance.getDefaultZoom());
 		TrainPainter tp = new TrainPainter(null, ofg, false, null);
-		
+
 		Iterator<Train> it = ptrains.iterator();
-		
+
 		int y = Car.CAR_WIDTH.iPixels() / 2 + 1;
 		int x = 1;
 		while (it.hasNext()) {
 			Train t = it.next();
-			
+
 			cr = t.array();
 			for (int i = 0; i < cr.length; i++) {
 				tp.segment(cr[i], new Line2D.Double(x,y,x+cr[i].length().iPixels(),y));
@@ -124,10 +125,10 @@ public class MultiLineTrainPanel extends JPanel {
 			x = 1;
 			y += Car.CAR_WIDTH.iPixels() * 1.5;
 		}
-		
-		
+
+
 		setPreferredSize(new Dimension(width+5, height));
 		revalidate();
-		
+
 	}
 }

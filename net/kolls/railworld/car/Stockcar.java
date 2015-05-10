@@ -25,32 +25,36 @@ import net.kolls.railworld.Distance;
 
 /**
  * Livestock car based on SP 780000
- * 
+ *
  * @author Steve Kollmansberger
  *
  */
 public class Stockcar extends AbstractCar {
 
 	// based on SP 780000
-	
-	private static final Distance d = new Distance(91,  Distance.Measure.FEET);
-	
 
+	private static final Distance d = new Distance(91,  Distance.Measure.FEET);
+
+
+	@Override
 	public Color color() {
 		return Color.yellow.darker();
 	}
 
 
+	@Override
 	public Distance length() {
 		return d;
 	}
 
 
+	@Override
 	public String show() {
 		return "Livestock Car";
 	}
 
 
+	@Override
 	public int weight() {
 		if (loaded()) return 109; else return 59;
 	}

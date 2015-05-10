@@ -26,7 +26,7 @@ import net.kolls.railworld.play.RailAccident;
 
 /**
  * One train smashes into the end of another train.
- * 
+ *
  * @author Steve Kollmansberger
  *
  */
@@ -34,7 +34,7 @@ public class RearEnd extends RailAccident {
 
 	/**
 	 * Simply calls super constructor.
-	 * 
+	 *
 	 * @param first First train
 	 * @param second Second train
 	 * @param p Location of accident

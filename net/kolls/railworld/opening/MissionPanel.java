@@ -1,10 +1,7 @@
 package net.kolls.railworld.opening;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.util.ArrayList;
 
-import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -39,7 +36,7 @@ import net.kolls.railworld.play.script.ScriptManager;
 /**
  * A panel which allows user to browse through the missions
  * and see their briefings.
- * 
+ *
  * @author Steve Kollmansberger
  */
 public class MissionPanel extends JPanel implements ListSelectionListener {
@@ -47,53 +44,53 @@ public class MissionPanel extends JPanel implements ListSelectionListener {
 	private JList missions;
 	private JPanel briefing, _not_sel_brief;
 	private ScriptManager sm;
-	
+
 	public MissionPanel() {
 		super();
-		
+
 		setLayout(new BorderLayout());
-	
+
 		sm = ScriptManager.allMissions();
-	
+
 		missions = new JList(sm.toArray());
 		_not_sel_brief = new JPanel();
 		_not_sel_brief.add(new JLabel("Select a mission to see a briefing"));
 		briefing = _not_sel_brief;
-		
-		
+
+
 		add(new JScrollPane(missions), BorderLayout.WEST);
 		add(briefing, BorderLayout.CENTER);
-		
+
 		setBorder(new EmptyBorder(5, 5, 5, 5));
-	
-		
+
+
 		revalidate();
-		
+
 		missions.addListSelectionListener(this);
 	}
 
 
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
-		
+
 		Mission m = (Mission)sm.get(missions.getSelectedIndex());
 		remove(briefing);
 		briefing = m.briefing();
 		add(briefing, BorderLayout.CENTER);
-		
+
 		revalidate();
-		
+
 	}
-	
+
 	/**
 	 * Returns the currently selected mission, or null if none.
-	 * 
+	 *
 	 * @return Currently selected mission
 	 */
 	public Mission getSelectedMission() {
 		if (missions.getSelectedIndex() == -1)
 			return null;
-		
+
 		return (Mission)sm.get(missions.getSelectedIndex());
 	}
 }

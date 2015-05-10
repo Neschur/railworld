@@ -1,7 +1,6 @@
 package net.kolls.railworld.scripts;
 
 import java.awt.Graphics2D;
-import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.util.Date;
 import java.util.HashSet;
@@ -15,11 +14,7 @@ import net.kolls.railworld.play.RailAccident;
 import net.kolls.railworld.play.script.Script;
 import net.kolls.railworld.play.script.ScriptManager;
 import net.kolls.railworld.play.script.TrainActionListener;
-import net.kolls.railworld.scripts.SpeedLimits.TooFast;
-import net.kolls.railworld.scripts.SpringSwitches.SpringSwitch;
 import net.kolls.railworld.segment.Crossing;
-import net.kolls.railworld.segment.Switch;
-import net.kolls.railworld.segment.TrackSegment;
 
 /*
  * Copyright (C) 2010 Steve Kollmansberger
@@ -41,7 +36,7 @@ import net.kolls.railworld.segment.TrackSegment;
 
 /**
  * Requires horn usage before moving and before entering a crossing.
- * 
+ *
  * @author Steve Kollmansberger
  */
 public class HornRequired implements Script, TrainActionListener {
@@ -50,12 +45,12 @@ public class HornRequired implements Script, TrainActionListener {
 	 * Contains a list of all trains that have sounded horn, and when they did so.
 	 */
 	protected Map<Train, Date> whenHorn = new Hashtable<Train, Date>();
-	
+
 	/**
 	 * Contains a list of all trains, and whether or not they are stopped (vel = 0)
 	 */
 	protected Map<Train, Boolean> isStopped = new Hashtable<Train, Boolean>();
-	
+
 	/**
 	 * How many seconds can a train go
 	 * since sounding horn
@@ -63,14 +58,14 @@ public class HornRequired implements Script, TrainActionListener {
 	 * is unacceptable?
 	 */
 	protected static final int MAX_HORN_SECS = 5;
-	
+
 	private PlayFrame mpf;
-	
+
 	@Override
 	public String toString() {
 		return "Mandatory Horn Usage";
 	}
-	
+
 	@Override
 	public void init(PlayFrame pf) {
 		pf.jdb.sm.addTrainActionListener(this, null, "horn");
@@ -87,7 +82,7 @@ public class HornRequired implements Script, TrainActionListener {
 			}
 		}
 		return lines;
-		
+
 	}
 
 	@Override
@@ -97,7 +92,7 @@ public class HornRequired implements Script, TrainActionListener {
 
 	@Override
 	public void load(Map<String, String> data) {
-		
+
 
 	}
 
@@ -112,28 +107,28 @@ public class HornRequired implements Script, TrainActionListener {
 		// unlikely to make a huge difference
 		return null;
 	}
-	
+
 	/**
 	 * Checks if the train has blown the horn within the alloted time.
 	 * In some cases, a train might blow the horn and then be immediately
 	 * replaced, like a reverse signal.
 	 * So if this train is not on file and
 	 * ANY train has blown the horn in the last second, that's also ok.
-	 * 
+	 *
 	 * @param t
 	 * @return true if the train is ok to proceed.
 	 */
 	protected boolean checkForHorn(Train t) {
 		boolean ok = false;
-		
-	
+
+
 		if (whenHorn.containsKey(t)) {
 			Date d = whenHorn.get(t);
 			long secs = ((new Date()).getTime() - d.getTime()) / 1000;
 			if (secs <= MAX_HORN_SECS) {
 				ok = true;
 			}
-			
+
 		} else {
 			for (Date d : whenHorn.values()) {
 				long secs = ((new Date()).getTime() - d.getTime());
@@ -142,13 +137,13 @@ public class HornRequired implements Script, TrainActionListener {
 				}
 			}
 		}
-		
+
 		return ok;
 	}
-	
+
 	@Override
 	public boolean trainAction(final Train t, String action) {
-		
+
 		if (action.equals("horn")) {
 			whenHorn.put(t, new Date());
 		}
@@ -157,23 +152,23 @@ public class HornRequired implements Script, TrainActionListener {
 				// just started moving, check for horn
 				if (!checkForHorn(t)) {
 					whenHorn.put(t, new Date()); // so it won't get thrown twice
-					
+
 					ScriptManager.DeferIntoStep(mpf, t, new Runnable() {
 						@Override
 						public void run() {
 							throw new NoHornStart(t, t.pos.getPoint());
 						}
 					});
-				
+
 				}
 			}
 			isStopped.put(t, t.vel() == 0);
-				
+
 		}
 		return false;
-	
+
 	}
-	
+
 	@Override
 	public boolean onByDefault() {
 		return false;
@@ -182,51 +177,51 @@ public class HornRequired implements Script, TrainActionListener {
 	/**
 	 * A crossing which throws a RailAccident if a train
 	 * enters and hasn't blown the horn recently enough.
-	 * 
+	 *
 	 * @author Steve Kollmansberger
 	 *
 	 */
 	public class HornCrossing extends Crossing {
 
 		private HashSet<Train> okedTrains = new HashSet<Train>();
-		
-		
+
+
 		public HornCrossing(Crossing c) {
 			super(c.getDest(POINT_BEGIN), c.getDest(POINT_END), c.getCoords());
-			
+
 			getDest(Crossing.POINT_BEGIN).update(c, this);
 			getDest(Crossing.POINT_END).update(c, this);
 		}
-		
-		
-		
+
+
+
 		@Override
 		public void enter(final Train t) {
-			
+
 			boolean ok = false;
-			
+
 			// train is already here, ignore
 			if (okedTrains.contains(t) || t.vel() == 0) {
 				ok = true;
 			} else ok = checkForHorn(t);
-			
-			
+
+
 			if (!ok) {
 				whenHorn.put(t, new Date()); // so it won't get thrown twice
-				
+
 				ScriptManager.DeferIntoStep(mpf, t, new Runnable() {
 					@Override
 					public void run() {
 						throw new NoHornCrossing(t, t.pos.getPoint());
 					}
 				});
-				
+
 			}
-			
-			
+
+
 			super.enter(t);
 		}
-		
+
 		@Override
 		public void draw(int z, Graphics2D gc) {
 			if (z == 4) {
@@ -234,31 +229,31 @@ public class HornRequired implements Script, TrainActionListener {
 				okedTrains.clear();
 				okedTrains.addAll(trains());
 			}
-			
+
 			super.draw(z, gc);
-			
+
 		}
 	}
-	
-	
+
+
 	/**
 	 * An accident used when the train enters a crossing without having sounded
 	 * the horn.
-	 * 
+	 *
 	 * @author Steve Kollmansberger
 	 *
 	 */
 	public class NoHornCrossing extends RailAccident {
 		/**
 		 * Create a "no horn" crossing accident.  Just calls the super constructor.
-		 * 
+		 *
 		 * @param first First train
 		 * @param p Location of accident
 		 */
 		public NoHornCrossing(Train first, Point2D p) {
 			super(first, null, p);
 		}
-		
+
 		@Override
 		public String midbody() {
 			return "failed to sound the horn before entering an at-grade crossing and struck a vehicle";
@@ -269,25 +264,25 @@ public class HornRequired implements Script, TrainActionListener {
 			return "TRAIN/VEHICLE COLLISION";
 		}
 	}
-	
-	
+
+
 	/**
 	 * An accident used when the train begins moving without sounding the horn.
-	 * 
+	 *
 	 * @author Steve Kollmansberger
 	 *
 	 */
 	public class NoHornStart extends RailAccident {
 		/**
 		 * Create a "no horn" start accident.  Just calls the super constructor.
-		 * 
+		 *
 		 * @param first First train
 		 * @param p Location of accident
 		 */
 		public NoHornStart(Train first, Point2D p) {
 			super(first, null, p);
 		}
-		
+
 		@Override
 		public String midbody() {
 			return "failed to sound the horn before starting movement and struck a person";
@@ -300,6 +295,6 @@ public class HornRequired implements Script, TrainActionListener {
 	}
 
 
-	
-	
+
+
 }

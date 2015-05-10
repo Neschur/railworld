@@ -25,18 +25,18 @@ import java.net.URL;
 import net.kolls.railworld.Sound;
 
 /**
- * Provides sound via the applet sound API.  
- * 
+ * Provides sound via the applet sound API.
+ *
  * @author Steve Kollmansberger
  *
  */
 public class AppletSound extends Sound {
 
 	private AudioClip ac;
-	
+
 	/**
 	 * Create an applet sound based on the given sound resource
-	 * 
+	 *
 	 * @param filen URL of sound to load
 	 */
 	public AppletSound(URL filen) {
@@ -47,7 +47,7 @@ public class AppletSound extends Sound {
 			ac = null;
 		}
 	}
-	
+
 	@Override
 	public boolean canPlay() {
 		return (ac != null);
@@ -90,10 +90,10 @@ public class AppletSound extends Sound {
 			return;
 		}
 		if (loopcnt == 1) loopcnt = 0;
-		
-		
-		
-		ac.stop();	
+
+
+
+		ac.stop();
 
 	}
 

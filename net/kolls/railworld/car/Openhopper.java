@@ -19,26 +19,30 @@ package net.kolls.railworld.car;
  */
 
 
-import net.kolls.railworld.Distance;
+import java.awt.Color;
 
-import java.awt.*;
+import net.kolls.railworld.Distance;
 
 // based on CSX coal hopper
 /**
  * Open hopper based on CSX coal hopper
- * 
+ *
  * @author Steve Kollmansberger
  */
 public class Openhopper extends AbstractCar {
-	
+
 	private static final Distance d = new Distance(48, Distance.Measure.FEET);
+	@Override
 	public Distance length() { return d; } // 48 ft
-	
+
+	@Override
 	public int weight() { if (loaded()) return 120; else return 20;} // loaded net 100 tons, 20 ton tare
-		
-	public Color color() { 
+
+	@Override
+	public Color color() {
 		return Color.black;
 	}
+	@Override
 	public String show() { return "Open hopper"; }
-	
+
 }

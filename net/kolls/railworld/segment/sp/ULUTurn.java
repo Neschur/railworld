@@ -2,7 +2,6 @@ package net.kolls.railworld.segment.sp;
 
 
 import java.awt.Color;
-import java.util.Map;
 
 import javax.swing.Icon;
 
@@ -30,13 +29,13 @@ import net.kolls.railworld.Train;
 
 /**
  * Unload, load, and reverse
- * 
+ *
  * @author Steve Kollmansberger
  */
 public class ULUTurn extends AbstractUL {
 
 	private Color col = Color.red;
-	
+
 	@Override
 	protected void FinishedUL(Train t) {
 		t.reverse = true;
@@ -46,14 +45,14 @@ public class ULUTurn extends AbstractUL {
 
 	}
 
-	
+
 
 	@Override
 	public Icon icon() {
 		return Images.sp_uluturn;
 	}
 
-	
+
 
 	@Override
 	public String toString() {

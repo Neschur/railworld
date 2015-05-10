@@ -26,9 +26,9 @@ import java.util.Map;
  * serialization; the reason for using a custom class rather than serializable
  * is so that scripts instances can be saved as well using the same technique
  * as regular classes.
- * 
+ *
  * Script classes are can't use newInstance, so we have an alternative here.
- * 
+ *
  * @author Steve Kollmansberger
  */
 public interface SaveLoad {
@@ -37,32 +37,33 @@ public interface SaveLoad {
 	 * Store all persistent data into a map and return for saving.
 	 * May return null if there is no data to save.  This will be treated
 	 * the same as the empty map.
-	 * 
+	 *
 	 * @return A list of key-value pairs to be saved.
 	 */
 	Map<String, String> save();
-	
+
 	/**
 	 * Load from saved.
-	 * 
+	 *
 	 * @param data Key value pairs saved by an instance of this class
-	 * 
+	 *
 	 */
 	void load(Map<String, String> data);
-	
-	
+
+
 	/**
 	 * like getClass().newInstance().  Allows script objects to also be copied.
-	 * 
+	 *
 	 * @return A new instance of this class
 	 */
 	Object newInstance();
-	
+
 	/**
-	 * 
+	 *
 	 * @return Give the name of this type so it can be reconstructed by the factory.
 	 */
+	@Override
 	String toString();
-	
-	
+
+
 }

@@ -25,7 +25,7 @@ import javax.swing.filechooser.FileFilter;
 
 /**
  * Returns files matching the RWG extension
- * 
+ *
  * @author Steve Kollmansberger
  *
  */
@@ -34,14 +34,14 @@ public class RWGFilter extends FileFilter {
 	@Override
 	public boolean accept(File f) {
 		if (f.isDirectory()) {
-            return true;
-        }
+			return true;
+		}
 
-        String u = f.getName().toUpperCase(); 
-        if (u.endsWith(".RWG")) return true;
-        
-        return false;	
-    }
+		String u = f.getName().toUpperCase();
+		if (u.endsWith(".RWG")) return true;
+
+		return false;
+	}
 
 	@Override
 	public String getDescription() {

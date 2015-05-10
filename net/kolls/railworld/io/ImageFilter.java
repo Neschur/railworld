@@ -24,41 +24,41 @@ import javax.swing.filechooser.FileFilter;
 
 /**
  * Filters for image files.
- * 
+ *
  * @author Steve Kollmansberger
  *
  */
 public class ImageFilter extends FileFilter {
 
-    
+
 	/**
 	 * Accept all directories and all gif, jpg, tiff, or png files.
-	 * 
+	 *
 	 *  @return <code>true</code> to accept.
 	 */
-    @Override
+	@Override
 	public boolean accept(File f) {
-        if (f.isDirectory()) {
-            return true;
-        }
+		if (f.isDirectory()) {
+			return true;
+		}
 
-        String u = f.getName().toUpperCase(); 
-        if (u.endsWith(".TIFF")) return true;
-        if (u.endsWith(".TIF")) return true;
-        if (u.endsWith(".GIF")) return true;
-        if (u.endsWith(".JPEG")) return true;
-        if (u.endsWith(".JPG")) return true;
-        if (u.endsWith(".PNG")) return true;
-        
-        return false;
-    }
+		String u = f.getName().toUpperCase();
+		if (u.endsWith(".TIFF")) return true;
+		if (u.endsWith(".TIF")) return true;
+		if (u.endsWith(".GIF")) return true;
+		if (u.endsWith(".JPEG")) return true;
+		if (u.endsWith(".JPG")) return true;
+		if (u.endsWith(".PNG")) return true;
 
-    
-    /**
-     * @return The description of this filter 
-     */
-    @Override
+		return false;
+	}
+
+
+	/**
+	 * @return The description of this filter
+	 */
+	@Override
 	public String getDescription() {
-        return "Image Files (TIFF, GIF, JPEG, PNG)";
-    }
+		return "Image Files (TIFF, GIF, JPEG, PNG)";
+	}
 }

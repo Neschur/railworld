@@ -27,6 +27,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JApplet;
@@ -59,12 +60,12 @@ import net.kolls.railworld.play.script.ScriptManager;
  *
  */
 public class Applet extends JApplet implements Runnable {
-	
+
 	private JPanel appletPic;
 	private Thread tlr;
 	private JLabel lbl;
 	private ResourceLoader rl;
-	
+
 	/**
 	 * Creates the applet.  This is called by the browser or applet viewer.
 	 */
@@ -77,25 +78,26 @@ public class Applet extends JApplet implements Runnable {
 			}
 		};
 		appletPic.setAlignmentX(Component.CENTER_ALIGNMENT);
-		
-		
+
+
 		getContentPane().setBackground(new Color(0, 200, 0));
 		final JLabel loading = new JLabel("Loading...");
 		loading.setFont(loading.getFont().deriveFont(42f));
 		loading.setHorizontalAlignment(SwingConstants.CENTER);
-		
-		
+
+
 		lbl = new JLabel("Loading, please wait...");
-		
+
 		lbl.setOpaque(false);
 		lbl.setHorizontalAlignment(SwingConstants.CENTER);
 		getContentPane().add(lbl, BorderLayout.SOUTH);
-		
-		
+
+
 		getContentPane().add(loading, BorderLayout.NORTH);
 		rl = new ResourceLoader(this);
 		rl.addChangeListener(new ChangeListener() {
 
+			@Override
 			public void stateChanged(ChangeEvent arg0) {
 				if (Images.applet != null) {
 					rl.removeChangeListener(this);
@@ -103,41 +105,42 @@ public class Applet extends JApplet implements Runnable {
 					appletPic.setPreferredSize(new Dimension(Images.applet.getWidth(), Images.applet.getHeight()));
 					getContentPane().add(appletPic, BorderLayout.NORTH);
 					validate();
-					
+
 				}
-				
+
 			}
-			
+
 		});
 		rl.addChangeListener(new ChangeListener() {
 
 			@Override
 			public void stateChanged(ChangeEvent arg0) {
 				if (rl.getValue() == rl.getMaximum()) {
-					synchronized (tlr) { 
+					synchronized (tlr) {
 						tlr.notify();
 					}
 				}
-				
+
 			}
 		});
-		
-		
+
+
 		getContentPane().add(rl);
-		
-		
+
+
 		validate();
 		setVisible(true);
-		
+
 		tlr = new Thread(rl);
 		tlr.start();
-		
+
 		Thread afl = new Thread(this);
 		afl.start();
-		
-		
+
+
 	}
-	
+
+	@Override
 	public void run() {
 
 
@@ -146,80 +149,81 @@ public class Applet extends JApplet implements Runnable {
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
 		}
-		
-		
-		
+
+
+
 		getContentPane().removeAll();
-		
-		
-		
-		
-		
+
+
+
+
+
 		final JButton b = new JButton("START!");
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
+
+
+
+
+
+
+
+
+
+
+
 		getContentPane().add(appletPic, BorderLayout.NORTH);
-		
+
 		JPanel selector = new JPanel();
 		selector.setLayout(new BoxLayout(selector, BoxLayout.PAGE_AXIS));
 		selector.setOpaque(false);
-		
-		
+
+
 		final JTabbedPane freeOrMission = new JTabbedPane();
-		
-		
+
+
 		// BEGIN FREE PLAY
 		JPanel freePlaySelector = new JPanel();
 		freePlaySelector.setLayout(new BoxLayout(freePlaySelector, BoxLayout.PAGE_AXIS));
-	
+
 		final JComboBox mapList = new JComboBox(rl.maps);
 		freePlaySelector.add(makeRow(new JLabel("Select Map"), mapList));
-	
-		
+
+
 		final ScriptPanel sp = new ScriptPanel();
-				
-		
+
+
 		freePlaySelector.add(makeRow(new JLabel("Select Script(s) to Use"), sp));
-	
-		
-		
+
+
+
 		// END FREE PLAY
 		freeOrMission.addTab("Free Play", freePlaySelector);
-		
+
 		final MissionPanel mp = new MissionPanel();
 		freeOrMission.addTab("Mission", mp);
-		
+
 		selector.add(freeOrMission);
 		selector.add(Box.createRigidArea(new Dimension(50,10)));
 		b.setAlignmentX(Component.CENTER_ALIGNMENT);
 		selector.add(b);
-		
+
 		selector.add(Box.createRigidArea(new Dimension(50,10)));
 		getContentPane().add(selector);
-		
+
 		getContentPane().add(Box.createHorizontalStrut(10), BorderLayout.WEST);
 		getContentPane().add(Box.createHorizontalStrut(10), BorderLayout.EAST);
-		
-		
+
+
 		lbl.setText("Rail World Version " + Opening.version + " (Applet)");
 		getContentPane().add(lbl, BorderLayout.SOUTH);
-		
+
 		validate();
 		repaint();
-		
+
 		b.addActionListener(new ActionListener() {
 
+			@Override
 			public void actionPerformed(ActionEvent e) {
-				
+
 				if (mapList.getSelectedIndex() == -1 && freeOrMission.getSelectedIndex() == 0) {
 					b.setText("Select a Map First");
 					return;
@@ -228,67 +232,68 @@ public class Applet extends JApplet implements Runnable {
 					b.setText("Select a Mission First");
 					return;
 				}
-				
+
 				freeOrMission.setEnabled(false);
 				b.setEnabled(false);
-        		b.setText("Downloading Map");
-        		
-        		sp.setEnabled(false);
-        		mapList.setEnabled(false);
-        		
+				b.setText("Downloading Map");
+
+				sp.setEnabled(false);
+				mapList.setEnabled(false);
+
 				Thread t  = new Thread(new Runnable() {
-		        	public void run() {
-		        		// download the image
-		        		MapLoader mymap = null;
-		        		
-		        		if (freeOrMission.getSelectedIndex() == 0)
-		        			mymap = rl.maps[mapList.getSelectedIndex()];
-		        		else {
-		        			for (MapLoader ml : rl.maps)
-		        				if (ml.getFilename().toLowerCase().equals(mp.getSelectedMission().rwmFilename().toLowerCase()))
-		        					mymap = ml;
-		        		}
-		        		
-		        		BufferedImage bi;
+					@Override
+					public void run() {
+						// download the image
+						MapLoader mymap = null;
+
+						if (freeOrMission.getSelectedIndex() == 0)
+							mymap = rl.maps[mapList.getSelectedIndex()];
+						else {
+							for (MapLoader ml : rl.maps)
+								if (ml.getFilename().toLowerCase().equals(mp.getSelectedMission().rwmFilename().toLowerCase()))
+									mymap = ml;
+						}
+
+						BufferedImage bi;
 						try {
 							bi = mymap.getImage();
 						} catch (IOException ex) {
 							ex.printStackTrace();
 							return;
 						}
-		        		
-		        		
-		        		b.setText("Starting Game");
-		        
-		        		Distance.feetPerPixels = mymap.getMetaData().feetPerPixel;
-		        		RailCanvas.zoom = mymap.getMetaData().zoom;
 
-		        		ScriptManager scripts;
-		        		
-		        		if (freeOrMission.getSelectedIndex() == 0) {
-		        			scripts = new ScriptManager();
-		        			for (int i = 0; i < sp.getScripts().length; i++) {
-		        				scripts.add( sp.getScripts()[i] );
-		        			}
-		        		} else {
-		        			scripts = mp.getSelectedMission().createScriptManager();
-		        		}
-		        		
-		        		final PlayFrame frame = new PlayFrame(mymap.getSegments(), bi, mymap.getMetaData(), scripts);
-		        		
-				
-		        		for (int i = 0; i < scripts.size(); i++)
-		        			scripts.get(i).init(frame);
-		        		
-				
-						
+
+						b.setText("Starting Game");
+
+						Distance.feetPerPixels = mymap.getMetaData().feetPerPixel;
+						RailCanvas.zoom = mymap.getMetaData().zoom;
+
+						ScriptManager scripts;
+
+						if (freeOrMission.getSelectedIndex() == 0) {
+							scripts = new ScriptManager();
+							for (int i = 0; i < sp.getScripts().length; i++) {
+								scripts.add( sp.getScripts()[i] );
+							}
+						} else {
+							scripts = mp.getSelectedMission().createScriptManager();
+						}
+
+						final PlayFrame frame = new PlayFrame(mymap.getSegments(), bi, mymap.getMetaData(), scripts);
+
+
+						for (int i = 0; i < scripts.size(); i++)
+							scripts.get(i).init(frame);
+
+
+
 						frame.setVisible(true);
-						
+
 						// loop will run until the window is closed
-						frame.startLoop();	
-						
+						frame.startLoop();
+
 						frame.dispose();
-						
+
 						// after the map has been run, it has been altered in two ways:
 						// the map image has been loaded and remains in memory in
 						// the mymap MapLoader
@@ -303,47 +308,47 @@ public class Applet extends JApplet implements Runnable {
 							// we loaded it fine the first time!
 							ex.printStackTrace();
 						}
-		        		
+
 						b.setEnabled(true);
 						b.setText("START!");
-						
+
 						sp.setEnabled(true);
-		        		mapList.setEnabled(true);
-		        		freeOrMission.setEnabled(true);
-						
-						
-		        	}
-			        
-		        });
-		        t.start();
-				
-				
-				
+						mapList.setEnabled(true);
+						freeOrMission.setEnabled(true);
+
+
+					}
+
+				});
+				t.start();
+
+
+
 			}
-			
+
 		});
-		
+
 	}
-	
+
 	private JPanel makeRow(JComponent left, JComponent right) {
 		JPanel p = new JPanel();
 		p.setOpaque(false);
 		p.setLayout(new BoxLayout(p, BoxLayout.LINE_AXIS));
-		
+
 		p.add(Box.createRigidArea(new Dimension(50,10)));
-		
+
 		left.setAlignmentY(Component.TOP_ALIGNMENT);
 		p.add(left);
-		
+
 		p.add(Box.createHorizontalGlue());
-		
+
 		right.setAlignmentY(Component.TOP_ALIGNMENT);
 		p.add(right);
-		
+
 		p.add(Box.createRigidArea(new Dimension(50,10)));
-		
+
 		return p;
-		
+
 	}
 }
 

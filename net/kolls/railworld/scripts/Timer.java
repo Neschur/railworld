@@ -3,8 +3,6 @@ package net.kolls.railworld.scripts;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
-import java.util.Date;
-import java.util.Hashtable;
 import java.util.Map;
 
 import net.kolls.railworld.RailCanvas;
@@ -33,30 +31,31 @@ import net.kolls.railworld.play.script.Script;
 
 
 /**
- * 
+ *
  * Maintains an hour/minute/second timer for the user.
- * 
- * 
+ *
+ *
  * @author Steve Kollmansberger
  */
 public class Timer implements Script, DrawListener {
 
 
 	protected PlayFrame mpf;
-	
+
 	@Override
 	public void init(PlayFrame pf) {
- 
-		mpf = pf; 
+
+		mpf = pf;
 		pf.jdb.sm.addDrawListener(this);
 
 	}
 
+	@Override
 	public RailSegment[] modifySegments(RailSegment[] lines) {
 		return lines;
-	
+
 	}
-	
+
 	@Override
 	public boolean playFrameAction(String action) {
 		// TODO Auto-generated method stub
@@ -65,9 +64,9 @@ public class Timer implements Script, DrawListener {
 
 	@Override
 	public void load(Map<String, String> data) {
-	
+
 	}
-	
+
 	@Override
 	public String toString() {
 		return "Timer";
@@ -86,12 +85,12 @@ public class Timer implements Script, DrawListener {
 	protected long getTime() {
 		return mpf.gl.elapsed;
 	}
-	
+
 	@Override
 	public void draw(Graphics2D gc, Rectangle onScreen) {
 
 		long elapsed = getTime();
-		
+
 		// format elapsed
 		long esec = elapsed / 1000;
 		long hrs = (esec / 60 / 60);
@@ -104,16 +103,16 @@ public class Timer implements Script, DrawListener {
 		b += mins + ":";
 		if (secs < 10) b += "0";
 		b += secs;
-		
+
 		AffineTransform ct = gc.getTransform();
 		gc.setTransform(new java.awt.geom.AffineTransform());
 
 
-		RailCanvas.drawOutlineFont(gc, 20, 20, // onScreen.getX()+20, onScreen.getY()+20, 
-			b, 10, java.awt.Color.white, 0, false);
-			
+		RailCanvas.drawOutlineFont(gc, 20, 20, // onScreen.getX()+20, onScreen.getY()+20,
+				b, 10, java.awt.Color.white, 0, false);
+
 		gc.setTransform(ct);
-		
+
 	}
 
 	@Override

@@ -25,31 +25,35 @@ import net.kolls.railworld.Distance;
 
 /**
  * Tank car (chemical car).  Based on 111A100W1
- * 
+ *
  * @author Steve Kollmansberger
  *
  */
 public class Tankcar extends AbstractCar {
-	
+
 	// based on 111A100W1 from various sources
 	private static final Distance d = new Distance(69, Distance.Measure.FEET);
-	
 
+
+	@Override
 	public Color color() {
 		return Color.blue;
 	}
 
 
+	@Override
 	public Distance length() {
 		return d;
 	}
 
 
+	@Override
 	public String show() {
 		return "Tank Car";
 	}
 
 
+	@Override
 	public int weight() {
 		if (loaded()) return 135; else return 35; // 272Klbs loaded w/ 30K gallons
 	}

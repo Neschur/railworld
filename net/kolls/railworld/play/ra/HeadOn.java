@@ -26,7 +26,7 @@ import net.kolls.railworld.play.RailAccident;
 
 /**
  * A head-on collision between two trains.
- * 
+ *
  * @author Steve Kollmansberger
  *
  */
@@ -34,7 +34,7 @@ public class HeadOn extends RailAccident {
 
 	/**
 	 * Create a head-on collision.  Just calls the super constructor.
-	 * 
+	 *
 	 * @param first First train
 	 * @param second Second train
 	 * @param p Location of accident
@@ -42,7 +42,7 @@ public class HeadOn extends RailAccident {
 	public HeadOn(Train first, Train second, Point2D p) {
 		super(first, second, p);
 	}
-	
+
 	@Override
 	public String midbody() {
 		return "collided head-on with a";

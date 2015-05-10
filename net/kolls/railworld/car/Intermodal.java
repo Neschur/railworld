@@ -25,32 +25,36 @@ import net.kolls.railworld.Distance;
 
 /**
  * Intermodal car based on Maxi I
- * 
+ *
  * @author Steve Kollmansberger
  *
  */
 public class Intermodal extends AbstractCar {
-	
-	// based on Maxi I
-	
-	private static final Distance d = new Distance(53, Distance.Measure.FEET);
-	
 
+	// based on Maxi I
+
+	private static final Distance d = new Distance(53, Distance.Measure.FEET);
+
+
+	@Override
 	public Color color() {
-			return Color.cyan;
+		return Color.cyan;
 	}
 
 
+	@Override
 	public Distance length() {
 		return d;
 	}
 
 
+	@Override
 	public String show() {
 		return "Intermodal";
 	}
 
 
+	@Override
 	public int weight() {
 		if (loaded()) return 80; else return 35;
 	}

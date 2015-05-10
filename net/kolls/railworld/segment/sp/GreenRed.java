@@ -31,18 +31,21 @@ import net.kolls.railworld.Train;
 
 /**
  * A signal which allows one train at full speed, then turns red.
- * 
+ *
  * @author Steve Kollmansberger
  *
  */
 public class GreenRed implements SignalProgram {
 
 	private Color col = Color.green;
-	
+
+	@Override
 	public void enter(Train t) { col = Color.red; }
 
+	@Override
 	public void reacting(Train t) {	}
 
+	@Override
 	public Color status() {
 		return col;
 	}
@@ -51,25 +54,29 @@ public class GreenRed implements SignalProgram {
 	public String toString() {
 		return "Proceed One Train";
 	}
-	
-	public Icon icon() {
-		
-		return Images.sp_greenred;
-		
-		
-	}
-	
 
-	public void load(Map<String, String> data) { 
+	@Override
+	public Icon icon() {
+
+		return Images.sp_greenred;
+
+
+	}
+
+
+	@Override
+	public void load(Map<String, String> data) {
 		col = new Color(Integer.parseInt(data.get("color")));
 	}
 
-	public Map<String, String> save() {	
+	@Override
+	public Map<String, String> save() {
 		Hashtable<String, String> h = new Hashtable<String, String>();
 		h.put("color", Integer.toString(col.getRGB()));
 		return h;
 	}
-	
+
+	@Override
 	public Object newInstance() { return new GreenRed(); }
 
 }

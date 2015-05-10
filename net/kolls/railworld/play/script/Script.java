@@ -2,7 +2,7 @@ package net.kolls.railworld.play.script;
 
 import net.kolls.railworld.RailSegment;
 import net.kolls.railworld.io.SaveLoad;
-import net.kolls.railworld.play.*;
+import net.kolls.railworld.play.PlayFrame;
 
 /*
  * Copyright (C) 2010 Steve Kollmansberger
@@ -25,54 +25,55 @@ import net.kolls.railworld.play.*;
 
 /**
  * The methods a plug-in must implement.  Many may be implemented with empty methods.
- * 
+ *
  * @author Steve Kollmansberger
  */
 public interface Script extends SaveLoad {
 	/**
 	 * Called before game start to give a selection list of possible plugins to the user.
-	 *  
-	 * @return The user displayed name or title for this script. 
+	 *
+	 * @return The user displayed name or title for this script.
 	 */
+	@Override
 	String toString();
-	
+
 	/**
 	 * Setup the script.  Called once when the game begins.
-	 * 
+	 *
 	 * @param pf The {@link PlayFrame} for this game
 	 *
 	 */
 	void init(PlayFrame pf);
-	
-	
+
+
 	/**
 	 * Before the game starts, script is allowed to modify
 	 * the segments.  Segment replacement should only occur
 	 * here.  After this, the segments are fixed.
-	 * 
+	 *
 	 * @param lines  The current segment array.
 	 * @return The new segment array.
 	 */
 	RailSegment[] modifySegments(RailSegment[] lines);
-	
-	
+
+
 	/**
 	 * Informs the script that a {@link PlayFrame} button has been pressed and allows it to cancel
 	 * the normal action.
-	 * 
+	 *
 	 * @param action The name of the command executed
 	 * @return Should the action be cancelled? (false is default, continue)
 	 */
 	boolean playFrameAction(String action);
-	
-	
+
+
 	/**
 	 * Queried before game start to determine if this script
 	 * should be on by default or not.  This is generally
 	 * only used the first time a player starts the game.
 	 * After that, it records their selections.  Also
 	 * used for applet.
-	 * 
+	 *
 	 * @return true if this script should be on.
 	 */
 	boolean onByDefault();

@@ -30,7 +30,7 @@ import net.kolls.railworld.Train;
 
 /**
  * A signal which stops trains and sends them back (reversed) the way they came.
- * 
+ *
  * @author Steve Kollmansberger
  *
  */
@@ -38,10 +38,12 @@ public class RedUTurn implements SignalProgram {
 
 	// needed for a split-second green to get train moving again
 	private Color col = Color.red;
-	
+
+	@Override
 	public void enter(Train t) { }
 
-	public void reacting(Train t) {	
+	@Override
+	public void reacting(Train t) {
 		if (t.vel() == 0 && col == java.awt.Color.red) {
 			t.reverse = true;
 			col = java.awt.Color.green;
@@ -49,9 +51,10 @@ public class RedUTurn implements SignalProgram {
 			col = java.awt.Color.red;
 
 		}
-		
+
 	}
 
+	@Override
 	public Color status() {
 		return col;
 	}
@@ -60,19 +63,23 @@ public class RedUTurn implements SignalProgram {
 	public String toString() {
 		return "Reverse";
 	}
-	
-	public Icon icon() {
-		
-		return Images.sp_reduturn;
-		
-		
-	}
-	
 
+	@Override
+	public Icon icon() {
+
+		return Images.sp_reduturn;
+
+
+	}
+
+
+	@Override
 	public void load(Map<String, String> data) { }
 
+	@Override
 	public Map<String, String> save() {	return null; }
-	
+
+	@Override
 	public Object newInstance() { return new RedUTurn(); }
 
 }

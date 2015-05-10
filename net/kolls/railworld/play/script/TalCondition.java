@@ -9,7 +9,7 @@ import net.kolls.railworld.Train;
  * occurs for the given train.  The train may be
  * null which means the listener will be notified
  * for the given event for any train.
- * 
+ *
  * @author Steve Kollmansberger
  *
  */
@@ -28,7 +28,7 @@ public class TalCondition {
 	public String event;
 	/**
 	 * Create a condition
-	 * 
+	 *
 	 * @param tal See {@link #tal}
 	 * @param t See {@link #t}
 	 * @param event See {@link #event}
@@ -38,14 +38,14 @@ public class TalCondition {
 		this.t = t;
 		this.event = event;
 	}
-	
+
 	@Override
 	public boolean equals(Object o) {
 		try {
 			TalCondition op = (TalCondition)o;
 			return (op.tal == tal && op.t == t && op.event.equals(event));
 		} catch (Exception ex) { return false; }
-		
-		
+
+
 	}
 }

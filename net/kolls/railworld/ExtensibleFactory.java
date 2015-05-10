@@ -33,17 +33,17 @@ import net.kolls.railworld.io.SaveLoad;
  * New types can be added (e.g. by plugins)  and then instantiated by other classes.
  * Works with the save/load system to allow saving and restoring of various classes.
  * Type parameter is supertype of all the items for that factory.
- * 
+ *
  * @param <T> The type of object to create in the factory.  Must implement {@link SaveLoad}
- * 
- * 
+ *
+ *
  * @see net.kolls.railworld.io.SaveLoad
  * @author Steve Kollmansberger
- * 
- * 
+ *
+ *
  */
 public class ExtensibleFactory<T extends SaveLoad> {
-	
+
 	private Map<String, T> mytypes;
 
 	/**
@@ -58,12 +58,12 @@ public class ExtensibleFactory<T extends SaveLoad> {
 	public void clear() {
 		mytypes.clear();
 	}
-	
+
 	/**
 	 * Adds a new subclass of the master item type to the factory.  The instance's
 	 * toString method will be queried immediately and that will be the key by which the item is found.
 	 * If an item already exists with that key, it will be replaced.
-	 * 
+	 *
 	 * @param item An instance of the class to add
 	 */
 	public void addType(T item) {
@@ -73,15 +73,15 @@ public class ExtensibleFactory<T extends SaveLoad> {
 	/**
 	 * Returns an instance of each item class known.  Note that a new instance for each item class is expected
 	 * each time this method is called.
-	 *  
+	 *
 	 *  @return <code>T[]</code>
 	 */
 	public ArrayList<T> allTypes() {
 		Iterator<T> it = mytypes.values().iterator();
 		//Object[] tar = new Object[mytypes.size()];
 		ArrayList<T> vsl = new ArrayList<T>();
-		
-		
+
+
 		while (it.hasNext()) {
 			T t = it.next();
 			try {
@@ -92,32 +92,32 @@ public class ExtensibleFactory<T extends SaveLoad> {
 				e.printStackTrace();
 			}
 		}
-		
+
 		//T[] ts = (T[])tar;
-		
+
 		return vsl;
-		
+
 	}
-	
+
 	/**
-	 * Given the {@link #toString()} value, creates a new instance.  
-	 *  
+	 * Given the {@link #toString()} value, creates a new instance.
+	 *
 	 * @param type The name of the item class, as defined in the toString method.
-	 * @return New item class instance 
+	 * @return New item class instance
 	 * @throws ClassNotFoundException If no item class is found to match the requested type.
 	 */
 	public T createInstance(String type) throws ClassNotFoundException {
-		
+
 		T val = mytypes.get(type);
-		
+
 		try {
-			if (val != null) return (T)val.newInstance();	
+			if (val != null) return (T)val.newInstance();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-			
-		
+
+
+
 		throw new ClassNotFoundException(type);
 	}
 

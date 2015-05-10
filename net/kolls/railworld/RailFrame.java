@@ -40,50 +40,50 @@ import net.kolls.railworld.opening.Options;
 
 /**
  * The main window which contains a canvas, a mini viewer, and the right hand control area.
- * 
+ *
  * @author Steve Kollmansberger
  *
  */
 public abstract class RailFrame extends JFrame implements ActionListener, WindowListener {
-	
-	
 
-	
+
+
+
 	/**
 	 * The mini viewer
 	 */
 	protected MiniViewer miniv;
-	
+
 	/**
 	 * The right panel
 	 */
 	protected JPanel rightPanel;
-	
+
 	/**
 	 * The tool bar.  Several buttons are given by default, and individual frames may add more.
 	 * Each individual frame, however, is responsible for all the functionality.
 	 */
 	protected JToolBar toolBar;
-	
+
 	/**
 	 * Create a rail frame.
-	 * 
+	 *
 	 * @param lines A {@link RailSegment} array.
 	 * @param source The source image.
 	 * @param tbnoun The noun for the button tooltips (game or map) e.g. "Save Game", "Save Map", ...
 	 */
 	public RailFrame(RailSegment[] lines, BufferedImage source, String tbnoun) {
 		super("Rail World");
-		
+
 		ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
-		
+
 		setLocationRelativeTo(null);
 		setIconImage(Images.frameIcon);
-		
 
-		
-		
-		
+
+
+
+
 		miniv = new MiniViewer();
 		miniv.setPreferredSize(new Dimension(195,195));
 		miniv.setMaximumSize(new Dimension(195,195));
@@ -97,7 +97,7 @@ public abstract class RailFrame extends JFrame implements ActionListener, Window
 		mp.setMaximumSize(new Dimension(205,205));
 		mp.add(miniv);
 		rightPanel.add(mp, BorderLayout.NORTH);
-		
+
 		// since tch looks ugly butting up against the edge,
 		// add filler
 		JPanel jp = new JPanel();
@@ -106,56 +106,56 @@ public abstract class RailFrame extends JFrame implements ActionListener, Window
 		jp = new JPanel();
 		jp.setPreferredSize(new Dimension(5,5));
 		rightPanel.add(jp, BorderLayout.EAST);
-		
-		
-		
-		
+
+
+
+
 		getContentPane().setLayout(new BorderLayout());
 		getContentPane().add(rightPanel, BorderLayout.EAST);
-		
+
 		toolBar = new JToolBar();
-		
+
 		toolBar.setFloatable(false);
 		toolBar.setRollover(true);
-		
+
 		JButton b;
-		
-		
-		
-		
-		
+
+
+
+
+
 		b = new JButton(Images.save);
 		b.setActionCommand("Save");
 		b.setToolTipText("Save " + tbnoun);
 		b.addActionListener(this);
 		toolBar.add(b);
-		
+
 		b = new JButton(Images.stop);
 		b.setActionCommand("Quit");
 		b.setToolTipText("Quit");
 		b.addActionListener(this);
 		toolBar.add(b);
-		
+
 		toolBar.addSeparator();
-		
+
 		b = new JButton(Images.zoomin);
 		b.setActionCommand("ZoomIn");
 		b.setToolTipText("Zoom In");
 		b.addActionListener(this);
 		toolBar.add(b);
-		
+
 		b = new JButton(Images.zoomout);
 		b.setActionCommand("ZoomOut");
 		b.setToolTipText("Zoom Out");
 		b.addActionListener(this);
 		toolBar.add(b);
-		
+
 		toolBar.addSeparator();
-		
-		
-		
+
+
+
 		getContentPane().add(toolBar, BorderLayout.NORTH);
-		
+
 
 
 		if (Options.getRemember()) {
@@ -166,23 +166,25 @@ public abstract class RailFrame extends JFrame implements ActionListener, Window
 					prefs.getInt("Height", 700)));
 		} else
 			setPreferredSize(new Dimension(750,700));
-		
+
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		addWindowListener(this);
-		
+
 
 	}
-	
-	
-	
-	
+
+
+
+
 	/**
 	 * Prepare and start the game loop.
 	 *
 	 */
 	public abstract void startLoop();
-	
+
+	@Override
 	public void 	windowActivated(WindowEvent e) { }
+	@Override
 	public void 	windowClosed(WindowEvent e) {
 		if (Options.getRemember()) {
 			Preferences prefs = Preferences.userNodeForPackage(Options.class);
@@ -191,19 +193,24 @@ public abstract class RailFrame extends JFrame implements ActionListener, Window
 			prefs.putInt("Width", getWidth());
 			prefs.putInt("Height", getHeight());
 		}
-		
-		
+
+
 	}
-	public void 	windowClosing(WindowEvent e) { 
+	@Override
+	public void 	windowClosing(WindowEvent e) {
 		// as if we pushed the quit button
 		ActionEvent ae = new ActionEvent(this, 0, "Quit");
 		actionPerformed(ae);
-		
-		
+
+
 	}
+	@Override
 	public void 	windowDeactivated(WindowEvent e) { }
+	@Override
 	public void 	windowDeiconified(WindowEvent e) { }
+	@Override
 	public void 	windowIconified(WindowEvent e) { }
+	@Override
 	public void 	windowOpened(WindowEvent e) { }
 
 }
