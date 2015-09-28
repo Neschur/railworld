@@ -158,7 +158,11 @@ public class Opening extends JFrame implements ActionListener {
 		JButton ng, lg, nm, lm, q, opts;
 		ng = new JButton("New Game");
 		ng.setActionCommand("NewGame");
-		ng.addActionListener(this);
+//		ng.addActionListener(this);
+		ng.addActionListener(arg0 -> {
+			NewGame ngw = new NewGame();
+			ngw.setVisible(true);
+        });
 
 
 		lg = new JButton("Load Game");
