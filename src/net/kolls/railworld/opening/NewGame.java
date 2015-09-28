@@ -1,19 +1,15 @@
 package net.kolls.railworld.opening;
 
 import net.kolls.railworld.Images;
-import net.kolls.railworld.play.script.ScriptManager;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.io.FilenameFilter;
-import java.lang.reflect.Array;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class NewGame extends JDialog {
+    private String selectedMap;
+
     public NewGame() {
         super();
         setTitle("New Game");
@@ -35,7 +31,7 @@ public class NewGame extends JDialog {
         tabbedPane.addTab("Missions", null, panel2);
         tabbedPane.setMnemonicAt(0, KeyEvent.VK_2);
 
-        JComponent panel3 = makeTextPanel("Panel #3");
+        JComponent panel3 = makeDownloadPanel();
         tabbedPane.addTab("Download", null, panel3);
         tabbedPane.setMnemonicAt(0, KeyEvent.VK_3);
 
@@ -90,21 +86,24 @@ public class NewGame extends JDialog {
     protected JComponent makeFreeplayPanel() {
         JPanel panel = new JPanel();
 
-        setLayout(new BorderLayout());
-
-
         JList missions = new JList(makeMapList());
+        missions.addListSelectionListener(e -> {
+            selectedMap = missions.getSelectedValue().toString();
+        });
         panel.add(new JScrollPane(missions), BorderLayout.WEST);
-        panel.setBorder(new EmptyBorder(5, 5, 5, 5));
 
-        panel.revalidate();
+        JButton startBtn = new JButton("Start");
+        startBtn.addActionListener(e -> {
+
+        });
+        panel.add(startBtn);
 
         return panel;
     }
 
-    protected JComponent makeTextPanel(String text) {
+    protected JComponent makeDownloadPanel() {
         JPanel panel = new JPanel(false);
-        JLabel filler = new JLabel(text);
+        JLabel filler = new JLabel("Download");
         filler.setHorizontalAlignment(JLabel.CENTER);
         panel.setLayout(new GridLayout(1, 1));
         panel.add(filler);
@@ -113,9 +112,8 @@ public class NewGame extends JDialog {
 
     private ListModel makeMapList() {
         DefaultListModel<String> listModel = new DefaultListModel();
-        String configPath = System.getProperty("user.home") + File.separator + ".railworld";
 
-        File dir = new File(configPath + "/maps/");
+        File dir = new File(getMapsPath());
 
         File [] files = dir.listFiles((dir1, name) -> {
             return name.endsWith(".rwm");
@@ -126,5 +124,13 @@ public class NewGame extends JDialog {
         }
 
         return listModel;
+    }
+
+    private String getConfigPath() {
+        return System.getProperty("user.home") + File.separator + ".railworld";
+    }
+
+    private String getMapsPath() {
+        return getConfigPath() + File.separator + "maps";
     }
 }
