@@ -16,8 +16,6 @@ import java.io.File;
 import java.io.IOException;
 
 public class NewGame extends JDialog {
-//    private String selectedMap;
-
     private JFrame mainWindow;
 
     private void run(final RailFrame frame) {
@@ -25,23 +23,21 @@ public class NewGame extends JDialog {
         // if we just fire it up in this code, it will be running in the event
         // loop thread, and block all events!
         // so we must spawn it into a different thread
-        Thread t  = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                frame.setVisible(true);
+        Thread t  = new Thread(() -> {
+            frame.setVisible(true);
 
-                // loop will run until the window is closed
-                try {
-                    frame.startLoop();
-                } catch (Throwable ex) {
-                    JOptionPane.showMessageDialog(mainWindow, "An error occured while running, and the game has been stopped.  Reason: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                    ex.printStackTrace();
-                }
-
-                frame.dispose();
-                mainWindow.setVisible(true);
+            // loop will run until the window is closed
+            try {
+                frame.startLoop();
+            } catch (Throwable ex) {
+                JOptionPane.showMessageDialog(mainWindow,
+                        "An error occurred while running, and the game has been stopped. " +
+                                "Reason: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                ex.printStackTrace();
             }
 
+            frame.dispose();
+            mainWindow.setVisible(true);
         });
         t.start();
     }
@@ -87,51 +83,11 @@ public class NewGame extends JDialog {
         JPanel okcan = new JPanel();
         okcan.setLayout(new BoxLayout(okcan, BoxLayout.X_AXIS));
         okcan.add(Box.createHorizontalGlue());
-        JButton ok;
-        ok = new JButton("Start");
-        final JDialog misd = this;
-        ok.addActionListener(e -> {
-            if (mp.getSelectedMission() == null) {
-                JOptionPane.showMessageDialog(misd, "You must select a mission to begin");
-            } else {
-                MapLoader mi = null;
-                try {
-                    mi = MapLoader.loadFromFile(new File(getMapsPath(), mp.getSelectedMission().rwmFilename()));
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                } catch (SAXException e1) {
-                    e1.printStackTrace();
-                }
-
-                ScriptManager scripts = new ScriptManager();
-                scripts = mp.getSelectedMission().createScriptManager();
-
-                setVisible(false);
-
-                RailCanvas.zoom = mi.getMetaData().zoom;
-                Distance.feetPerPixels = mi.getMetaData().feetPerPixel;
-
-                RailFrame frame = null;
-
-                try {
-                    frame = new PlayFrame(mi.getSegments(), mi.getImage(), mi.getMetaData(), scripts);
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
-                scripts.init( (PlayFrame)frame);
-
-                // 8. run the frame
-                if (frame != null)
-                    run(frame);
-                else
-                    setVisible(true);
-
-                mi = null;
-
-                mainWindow.setVisible(false);
-            }
-
-        });
+        JButton ok = new JButton("Start");
+        ok.addActionListener(e ->
+            startGame(new File(getMapsPath(), mp.getSelectedMission().rwmFilename()),
+                    mp.getSelectedMission().createScriptManager())
+        );
 
         okcan.add(ok);
         okcan.add(Box.createHorizontalGlue());
@@ -164,8 +120,11 @@ public class NewGame extends JDialog {
 
         panelButtons.add(Box.createHorizontalGlue());
 
-        JButton btnCheck = new JButton("Play");
-        panelButtons.add(btnCheck);
+        JButton btnPlay = new JButton("Play");
+        btnPlay.addActionListener(e ->
+            startGame(new File(getMapsPath(), list.getSelectedValue().toString()), new ScriptManager())
+        );
+        panelButtons.add(btnPlay);
 
         panelButtons.add(Box.createHorizontalGlue());
 
@@ -222,5 +181,36 @@ public class NewGame extends JDialog {
 
     private String getMapsPath() {
         return getConfigPath() + File.separator + "maps";
+    }
+
+    protected void startGame(File mapFile, ScriptManager scripts) {
+        MapLoader mi = null;
+
+        try {
+            mi = MapLoader.loadFromFile(mapFile);
+        } catch (IOException | SAXException e1) {
+            e1.printStackTrace();
+        }
+
+        setVisible(false);
+
+        RailCanvas.zoom = mi.getMetaData().zoom;
+        Distance.feetPerPixels = mi.getMetaData().feetPerPixel;
+
+        RailFrame frame = null;
+
+        try {
+            frame = new PlayFrame(mi.getSegments(), mi.getImage(), mi.getMetaData(), scripts);
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+        scripts.init( (PlayFrame)frame);
+
+        if (frame != null)
+            run(frame);
+        else
+            setVisible(true);
+
+        mainWindow.setVisible(false);
     }
 }
