@@ -328,7 +328,7 @@ public class Opening extends JFrame implements ActionListener {
 
 
 		setResizable(false);
-		setLocationRelativeTo(null);
+
 		setIconImage(Images.frameIcon);
 		setTitle("Rail World");
 
@@ -348,6 +348,7 @@ public class Opening extends JFrame implements ActionListener {
 
 		pack();
 
+		setLocationRelativeTo(null);
 	}
 
 
