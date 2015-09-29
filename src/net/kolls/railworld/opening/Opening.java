@@ -160,7 +160,7 @@ public class Opening extends JFrame implements ActionListener {
 		ng.setActionCommand("NewGame");
 //		ng.addActionListener(this);
 		ng.addActionListener(arg0 -> {
-			NewGame ngw = new NewGame();
+			NewGame ngw = new NewGame(this);
 			ngw.setVisible(true);
         });
 

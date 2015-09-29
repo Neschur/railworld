@@ -1,18 +1,54 @@
 package net.kolls.railworld.opening;
 
+import net.kolls.railworld.Distance;
 import net.kolls.railworld.Images;
+import net.kolls.railworld.RailCanvas;
+import net.kolls.railworld.RailFrame;
+import net.kolls.railworld.play.PlayFrame;
+import net.kolls.railworld.play.script.ScriptManager;
+import org.xml.sax.SAXException;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.io.IOException;
 
 public class NewGame extends JDialog {
-    private String selectedMap;
+//    private String selectedMap;
 
-    public NewGame() {
+    private JFrame mainWindow;
+
+    private void run(final RailFrame frame) {
+
+        // if we just fire it up in this code, it will be running in the event
+        // loop thread, and block all events!
+        // so we must spawn it into a different thread
+        Thread t  = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                frame.setVisible(true);
+
+                // loop will run until the window is closed
+                try {
+                    frame.startLoop();
+                } catch (Throwable ex) {
+                    JOptionPane.showMessageDialog(mainWindow, "An error occured while running, and the game has been stopped.  Reason: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    ex.printStackTrace();
+                }
+
+                frame.dispose();
+                mainWindow.setVisible(true);
+            }
+
+        });
+        t.start();
+    }
+
+    public NewGame(JFrame mainWindow) {
         super();
+        this.mainWindow = mainWindow;
         setTitle("New Game");
         setIconImage(Images.frameIcon);
 
@@ -58,7 +94,41 @@ public class NewGame extends JDialog {
             if (mp.getSelectedMission() == null) {
                 JOptionPane.showMessageDialog(misd, "You must select a mission to begin");
             } else {
+                MapLoader mi = null;
+                try {
+                    mi = MapLoader.loadFromFile(new File(getMapsPath(), mp.getSelectedMission().rwmFilename()));
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                } catch (SAXException e1) {
+                    e1.printStackTrace();
+                }
+
+                ScriptManager scripts = new ScriptManager();
+                scripts = mp.getSelectedMission().createScriptManager();
+
                 setVisible(false);
+
+                RailCanvas.zoom = mi.getMetaData().zoom;
+                Distance.feetPerPixels = mi.getMetaData().feetPerPixel;
+
+                RailFrame frame = null;
+
+                try {
+                    frame = new PlayFrame(mi.getSegments(), mi.getImage(), mi.getMetaData(), scripts);
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+                scripts.init( (PlayFrame)frame);
+
+                // 8. run the frame
+                if (frame != null)
+                    run(frame);
+                else
+                    setVisible(true);
+
+                mi = null;
+
+                mainWindow.setVisible(false);
             }
 
         });
@@ -67,7 +137,7 @@ public class NewGame extends JDialog {
         okcan.add(Box.createHorizontalGlue());
 
         panel.add(okcan);
-        panel.add(new JLabel(" ")); // too lazy to do proper margin right now
+        panel.add(new JLabel(" "));
 
         setModalityType(JDialog.DEFAULT_MODALITY_TYPE);
         setPreferredSize(new Dimension(500, 300));
