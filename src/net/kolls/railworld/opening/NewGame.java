@@ -6,14 +6,20 @@ import net.kolls.railworld.RailCanvas;
 import net.kolls.railworld.RailFrame;
 import net.kolls.railworld.play.PlayFrame;
 import net.kolls.railworld.play.script.ScriptManager;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.xml.sax.SAXException;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
 
 public class NewGame extends JDialog {
     private JFrame mainWindow;
@@ -136,7 +142,8 @@ public class NewGame extends JDialog {
         panel.setLayout(new BorderLayout());
         panel.setBorder(new EmptyBorder(5, 5, 5, 5));
 
-        JList list = new JList(makeMapList());
+        DefaultListModel<String> listModel = new DefaultListModel<>();
+        JList list = new JList(listModel);
         panel.add(new JScrollPane(list), BorderLayout.WEST);
 
         JPanel panelButtons = new JPanel();
@@ -147,6 +154,9 @@ public class NewGame extends JDialog {
         panelButtons.add(Box.createHorizontalGlue());
 
         JButton btnCheck = new JButton("Check");
+        btnCheck.addActionListener(e -> {
+            checkDownload(listModel);
+        });
         panelButtons.add(btnCheck);
 
         panelButtons.add(Box.createHorizontalGlue());
@@ -212,5 +222,31 @@ public class NewGame extends JDialog {
             setVisible(true);
 
         mainWindow.setVisible(false);
+    }
+
+    private void checkDownload(DefaultListModel listModel) {
+        listModel.clear();
+
+        try {
+            URL url = new URL("http://railworld.siarhei.by/maps.json");
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+            String line = in.readLine();
+            JSONObject json = new JSONObject(line);
+
+            JSONArray maps = json.getJSONArray("maps");
+            for(int i = 0; i < maps.length(); i++) {
+                JSONObject map = maps.getJSONObject(i);
+
+
+                listModel.addElement(map.getString("fileName"));
+                System.out.println(map.getString("fileName"));
+            }
+
+            in.close();
+
+        } catch (JSONException | IOException e) {
+            e.printStackTrace();
+        }
     }
 }
