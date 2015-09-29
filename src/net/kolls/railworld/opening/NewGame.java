@@ -3,6 +3,7 @@ package net.kolls.railworld.opening;
 import net.kolls.railworld.Images;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.File;
@@ -16,8 +17,8 @@ public class NewGame extends JDialog {
         setIconImage(Images.frameIcon);
 
         addWidgets();
-        pack();
-        setSize(640, 480);
+        setSize(440, 380);
+        setLocationRelativeTo(null);
     }
 
     private void addWidgets() {
@@ -50,13 +51,12 @@ public class NewGame extends JDialog {
         JPanel okcan = new JPanel();
         okcan.setLayout(new BoxLayout(okcan, BoxLayout.X_AXIS));
         okcan.add(Box.createHorizontalGlue());
-        JButton ok, cancel;
+        JButton ok;
         ok = new JButton("Start");
         final JDialog misd = this;
         ok.addActionListener(e -> {
             if (mp.getSelectedMission() == null) {
                 JOptionPane.showMessageDialog(misd, "You must select a mission to begin");
-
             } else {
                 setVisible(false);
             }
@@ -64,10 +64,6 @@ public class NewGame extends JDialog {
         });
 
         okcan.add(ok);
-        okcan.add(Box.createHorizontalGlue());
-        cancel = new JButton("Cancel");
-        cancel.addActionListener(e -> setVisible(false));
-        okcan.add(cancel);
         okcan.add(Box.createHorizontalGlue());
 
         panel.add(okcan);
@@ -84,29 +80,53 @@ public class NewGame extends JDialog {
     }
 
     protected JComponent makeFreeplayPanel() {
-        JPanel panel = new JPanel();
+        JPanel panel = new JPanel(false);
+        panel.setLayout(new BorderLayout());
+        panel.setBorder(new EmptyBorder(5, 5, 5, 5));
 
-        JList missions = new JList(makeMapList());
-        missions.addListSelectionListener(e -> {
-            selectedMap = missions.getSelectedValue().toString();
-        });
-        panel.add(new JScrollPane(missions), BorderLayout.WEST);
+        JList list = new JList(makeMapList());
+        panel.add(new JScrollPane(list), BorderLayout.WEST);
 
-        JButton startBtn = new JButton("Start");
-        startBtn.addActionListener(e -> {
+        JPanel panelButtons = new JPanel();
+        panelButtons.setLayout(new BoxLayout(panelButtons, BoxLayout.X_AXIS));
+        panelButtons.setBorder(new EmptyBorder(5, 5, 5, 5));
+        panel.add(panelButtons, BorderLayout.SOUTH);
 
-        });
-        panel.add(startBtn);
+        panelButtons.add(Box.createHorizontalGlue());
+
+        JButton btnCheck = new JButton("Play");
+        panelButtons.add(btnCheck);
+
+        panelButtons.add(Box.createHorizontalGlue());
 
         return panel;
     }
 
     protected JComponent makeDownloadPanel() {
         JPanel panel = new JPanel(false);
-        JLabel filler = new JLabel("Download");
-        filler.setHorizontalAlignment(JLabel.CENTER);
-        panel.setLayout(new GridLayout(1, 1));
-        panel.add(filler);
+        panel.setLayout(new BorderLayout());
+        panel.setBorder(new EmptyBorder(5, 5, 5, 5));
+
+        JList list = new JList(makeMapList());
+        panel.add(new JScrollPane(list), BorderLayout.WEST);
+
+        JPanel panelButtons = new JPanel();
+        panelButtons.setLayout(new BoxLayout(panelButtons, BoxLayout.X_AXIS));
+        panelButtons.setBorder(new EmptyBorder(5, 5, 5, 5));
+        panel.add(panelButtons, BorderLayout.SOUTH);
+
+        panelButtons.add(Box.createHorizontalGlue());
+
+        JButton btnCheck = new JButton("Check");
+        panelButtons.add(btnCheck);
+
+        panelButtons.add(Box.createHorizontalGlue());
+
+        JButton btnDownload = new JButton("Download Selected");
+        panelButtons.add(btnDownload);
+
+        panelButtons.add(Box.createHorizontalGlue());
+
         return panel;
     }
 
