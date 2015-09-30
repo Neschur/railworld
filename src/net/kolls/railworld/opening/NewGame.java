@@ -6,6 +6,8 @@ import net.kolls.railworld.RailCanvas;
 import net.kolls.railworld.RailFrame;
 import net.kolls.railworld.play.PlayFrame;
 import net.kolls.railworld.play.script.ScriptManager;
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,11 +17,11 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URL;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
+import java.util.Scanner;
 
 public class NewGame extends JDialog {
     private JFrame mainWindow;
@@ -154,14 +156,15 @@ public class NewGame extends JDialog {
         panelButtons.add(Box.createHorizontalGlue());
 
         JButton btnCheck = new JButton("Check");
-        btnCheck.addActionListener(e -> {
-            checkDownload(listModel);
-        });
+        btnCheck.addActionListener(e -> checkDownload(listModel));
         panelButtons.add(btnCheck);
 
         panelButtons.add(Box.createHorizontalGlue());
 
         JButton btnDownload = new JButton("Download Selected");
+        btnDownload.addActionListener(e -> {
+            downloadSelected(list);
+        });
         panelButtons.add(btnDownload);
 
         panelButtons.add(Box.createHorizontalGlue());
@@ -248,5 +251,32 @@ public class NewGame extends JDialog {
         } catch (JSONException | IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void downloadSelected(JList list) {
+        java.util.List<String> values = list.getSelectedValuesList();
+        for(String map : values)
+            try {
+                URL website = new URL("http://railworld.siarhei.by/maps/" + map);
+                ReadableByteChannel rbc = Channels.newChannel(website.openStream());
+                String zipPath = getConfigPath() + "/tmp/" + map;
+                FileOutputStream fos = new FileOutputStream(zipPath);
+                fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+
+                ZipFile zipFile = new ZipFile(zipPath);
+                zipFile.extractAll(getMapsPath());
+
+                File infoJson = new File(getMapsPath() + File.separator + "info.json");
+                String jsonString = "";
+                Scanner in = new Scanner(infoJson);
+                while(in.hasNext())
+                    jsonString  += in.nextLine();
+                in.close();
+                JSONObject json = new JSONObject(jsonString);
+                infoJson.renameTo(new File(getMapsPath() + File.separator + json.getString("id") + ".json"));
+            } catch (JSONException| IOException | ZipException e) {
+                JOptionPane.showMessageDialog(this, "An error occurred on download" +
+                        "Reason: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
     }
 }
