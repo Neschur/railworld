@@ -241,9 +241,9 @@ public class NewGame extends JDialog {
             for(int i = 0; i < maps.length(); i++) {
                 JSONObject map = maps.getJSONObject(i);
 
-
-                listModel.addElement(map.getString("fileName"));
-                System.out.println(map.getString("fileName"));
+                File infoFile = new File(getMapsPath() + File.separator + map.getString("id") + ".json");
+                if(!infoFile.exists())
+                    listModel.addElement(map.getString("fileName"));
             }
 
             in.close();
@@ -278,5 +278,6 @@ public class NewGame extends JDialog {
                 JOptionPane.showMessageDialog(this, "An error occurred on download" +
                         "Reason: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
+        checkDownload((DefaultListModel)list.getModel());
     }
 }
