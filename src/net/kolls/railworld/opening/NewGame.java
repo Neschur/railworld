@@ -18,6 +18,8 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
@@ -272,15 +274,15 @@ public class NewGame extends JDialog {
         for(int index: indices) {
             String map = model.getMapAt(index);
             try {
-                URL website = new URL("http://railworld.siarhei.by/maps/" + map);
-                ReadableByteChannel rbc = Channels.newChannel(website.openStream());
+                URI uri = new URI("http",  "railworld.siarhei.by", "/maps/" + map, null);
+                ReadableByteChannel rbc = Channels.newChannel(uri.toURL().openStream());
                 String zipPath = getConfigPath() + "/tmp/" + map;
                 FileOutputStream fos = new FileOutputStream(zipPath);
                 fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
 
                 ZipFile zipFile = new ZipFile(zipPath);
                 zipFile.extractAll(getMapsPath());
-            } catch (IOException | ZipException e) {
+            } catch (URISyntaxException | IOException | ZipException e) {
                 JOptionPane.showMessageDialog(this, "An error occurred on download" +
                         "Reason: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
