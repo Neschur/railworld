@@ -21,7 +21,6 @@ import java.io.*;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
-import java.util.Scanner;
 
 public class NewGame extends JDialog {
     private JFrame mainWindow;
@@ -93,10 +92,18 @@ public class NewGame extends JDialog {
         okcan.setLayout(new BoxLayout(okcan, BoxLayout.X_AXIS));
         okcan.add(Box.createHorizontalGlue());
         JButton ok = new JButton("Start");
-//        ok.addActionListener(e ->
-//            startGame(new File(getMapsPath(), mp.getSelectedMission().rwmFilename()),
-//                    mp.getSelectedMission().createScriptManager())
-//        );
+        ok.addActionListener(e -> {
+                    try {
+                        startGame(MapLoader.loadFromFile(new File(getMapsPath(), mp.getSelectedMission().rwmFilename())),
+                                mp.getSelectedMission().createScriptManager());
+                    } catch (IOException e1) {
+                        JOptionPane.showMessageDialog(this, "Please, download map " +
+                                mp.getSelectedMission().rwmFilename(), "Error1", JOptionPane.INFORMATION_MESSAGE);
+                    } catch (SAXException e1) {
+                        e1.printStackTrace();
+                    }
+                }
+        );
 
         okcan.add(ok);
         okcan.add(Box.createHorizontalGlue());
