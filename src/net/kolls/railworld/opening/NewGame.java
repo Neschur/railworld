@@ -25,6 +25,7 @@ import java.util.Scanner;
 
 public class NewGame extends JDialog {
     private JFrame mainWindow;
+    private MapListModel<MapLoader> freePlayMaps = null;
 
     private void run(final RailFrame frame) {
 
@@ -92,10 +93,10 @@ public class NewGame extends JDialog {
         okcan.setLayout(new BoxLayout(okcan, BoxLayout.X_AXIS));
         okcan.add(Box.createHorizontalGlue());
         JButton ok = new JButton("Start");
-        ok.addActionListener(e ->
-            startGame(new File(getMapsPath(), mp.getSelectedMission().rwmFilename()),
-                    mp.getSelectedMission().createScriptManager())
-        );
+//        ok.addActionListener(e ->
+//            startGame(new File(getMapsPath(), mp.getSelectedMission().rwmFilename()),
+//                    mp.getSelectedMission().createScriptManager())
+//        );
 
         okcan.add(ok);
         okcan.add(Box.createHorizontalGlue());
@@ -130,7 +131,7 @@ public class NewGame extends JDialog {
 
         JButton btnPlay = new JButton("Play");
         btnPlay.addActionListener(e ->
-            startGame(new File(getMapsPath(), list.getSelectedValue().toString()), new ScriptManager())
+            startGame(freePlayMaps.getMapAt(list.getSelectedIndex()), new ScriptManager())
         );
         panelButtons.add(btnPlay);
 
@@ -144,7 +145,7 @@ public class NewGame extends JDialog {
         panel.setLayout(new BorderLayout());
         panel.setBorder(new EmptyBorder(5, 5, 5, 5));
 
-        DefaultListModel<String> listModel = new DefaultListModel<>();
+        MapListModel<String> listModel = new MapListModel<>();
         JList list = new JList(listModel);
         panel.add(new JScrollPane(list), BorderLayout.WEST);
 
@@ -156,7 +157,10 @@ public class NewGame extends JDialog {
         panelButtons.add(Box.createHorizontalGlue());
 
         JButton btnCheck = new JButton("Check");
-        btnCheck.addActionListener(e -> checkDownload(listModel));
+        btnCheck.addActionListener(e -> {
+            checkDownload(listModel);
+
+        });
         panelButtons.add(btnCheck);
 
         panelButtons.add(Box.createHorizontalGlue());
@@ -173,7 +177,10 @@ public class NewGame extends JDialog {
     }
 
     private ListModel makeMapList() {
-        DefaultListModel<String> listModel = new DefaultListModel();
+        if(freePlayMaps == null)
+            freePlayMaps = new MapListModel();
+        else
+            freePlayMaps.clear();
 
         File dir = new File(getMapsPath());
 
@@ -182,10 +189,16 @@ public class NewGame extends JDialog {
         });
 
         for (File file: files) {
-            listModel.addElement(file.toPath().getFileName().toString());
+            try {
+                MapLoader map = MapLoader.loadFromFile(file);
+                freePlayMaps.addElement(map.getMetaData().title, map);
+            } catch (IOException |SAXException e) {
+                e.printStackTrace();
+            }
+
         }
 
-        return listModel;
+        return freePlayMaps;
     }
 
     private String getConfigPath() {
@@ -196,15 +209,7 @@ public class NewGame extends JDialog {
         return getConfigPath() + File.separator + "maps";
     }
 
-    protected void startGame(File mapFile, ScriptManager scripts) {
-        MapLoader mi = null;
-
-        try {
-            mi = MapLoader.loadFromFile(mapFile);
-        } catch (IOException | SAXException e1) {
-            e1.printStackTrace();
-        }
-
+    protected void startGame(MapLoader mi, ScriptManager scripts) {
         setVisible(false);
 
         RailCanvas.zoom = mi.getMetaData().zoom;
@@ -227,7 +232,7 @@ public class NewGame extends JDialog {
         mainWindow.setVisible(false);
     }
 
-    private void checkDownload(DefaultListModel listModel) {
+    private void checkDownload(MapListModel listModel) {
         listModel.clear();
 
         try {
@@ -241,9 +246,10 @@ public class NewGame extends JDialog {
             for(int i = 0; i < maps.length(); i++) {
                 JSONObject map = maps.getJSONObject(i);
 
-                File infoFile = new File(getMapsPath() + File.separator + map.getString("id") + ".json");
-                if(!infoFile.exists())
-                    listModel.addElement(map.getString("fileName"));
+                File infoFile = new File(getMapsPath() + File.separator + map.getString("mapFileName"));
+                if(!infoFile.exists()) {
+                    listModel.addElement(map.getString("name"), map.getString("zipFileName"));
+                }
             }
 
             in.close();
@@ -254,8 +260,10 @@ public class NewGame extends JDialog {
     }
 
     private void downloadSelected(JList list) {
-        java.util.List<String> values = list.getSelectedValuesList();
-        for(String map : values)
+        int[] indices = list.getSelectedIndices();
+        MapListModel<String> model = (MapListModel<String>)list.getModel();
+        for(int index: indices) {
+            String map = model.getMapAt(index);
             try {
                 URL website = new URL("http://railworld.siarhei.by/maps/" + map);
                 ReadableByteChannel rbc = Channels.newChannel(website.openStream());
@@ -265,19 +273,12 @@ public class NewGame extends JDialog {
 
                 ZipFile zipFile = new ZipFile(zipPath);
                 zipFile.extractAll(getMapsPath());
-
-                File infoJson = new File(getMapsPath() + File.separator + "info.json");
-                String jsonString = "";
-                Scanner in = new Scanner(infoJson);
-                while(in.hasNext())
-                    jsonString  += in.nextLine();
-                in.close();
-                JSONObject json = new JSONObject(jsonString);
-                infoJson.renameTo(new File(getMapsPath() + File.separator + json.getString("id") + ".json"));
-            } catch (JSONException| IOException | ZipException e) {
+            } catch (IOException | ZipException e) {
                 JOptionPane.showMessageDialog(this, "An error occurred on download" +
                         "Reason: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
-        checkDownload((DefaultListModel)list.getModel());
+        }
+        checkDownload((MapListModel)list.getModel());
+        makeMapList();
     }
 }
