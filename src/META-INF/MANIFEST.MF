@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+SplashScreen-Image: net/splash.png
+Main-Class: net.kolls.railworld.opening.Opening
+
