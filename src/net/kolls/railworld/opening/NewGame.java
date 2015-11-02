@@ -23,10 +23,14 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class NewGame extends JDialog {
     private JFrame mainWindow;
     private MapListModel<MapLoader> freePlayMaps = null;
+    private String mapsPath = null;
+    private String tmpPath = null;
 
     private void run(final RailFrame frame) {
 
@@ -215,7 +219,25 @@ public class NewGame extends JDialog {
     }
 
     private String getMapsPath() {
-        return getConfigPath() + File.separator + "maps";
+        if(mapsPath != null) {
+            return mapsPath;
+        }
+        mapsPath = getConfigPath() + File.separator + "maps" + File.separator;
+        if(Files.notExists(Paths.get(mapsPath))) {
+            (new File(mapsPath.toString())).mkdirs();
+        }
+        return mapsPath;
+    }
+
+    private String getTmpPath() {
+        if(tmpPath != null) {
+            return tmpPath;
+        }
+        tmpPath = getConfigPath() + File.separator + "tmp" + File.separator;
+        if(Files.notExists(Paths.get(tmpPath))) {
+            (new File(tmpPath)).mkdirs();
+        }
+        return tmpPath;
     }
 
     protected void startGame(MapLoader mi, ScriptManager scripts) {
@@ -255,7 +277,7 @@ public class NewGame extends JDialog {
             for(int i = 0; i < maps.length(); i++) {
                 JSONObject map = maps.getJSONObject(i);
 
-                File infoFile = new File(getMapsPath() + File.separator + map.getString("mapFileName"));
+                File infoFile = new File(getMapsPath() + map.getString("mapFileName"));
                 if(!infoFile.exists()) {
                     listModel.addElement(map.getString("name"), map.getString("zipFileName"));
                 }
@@ -276,7 +298,7 @@ public class NewGame extends JDialog {
             try {
                 URI uri = new URI("http",  "railworld.siarhei.by", "/maps/" + map, null);
                 ReadableByteChannel rbc = Channels.newChannel(uri.toURL().openStream());
-                String zipPath = getConfigPath() + "/tmp/" + map;
+                String zipPath = getTmpPath() + map;
                 FileOutputStream fos = new FileOutputStream(zipPath);
                 fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
 
