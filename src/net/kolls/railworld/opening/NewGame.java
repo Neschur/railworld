@@ -135,6 +135,9 @@ public class NewGame extends JDialog {
         JList list = new JList(makeMapList());
         panel.add(new JScrollPane(list), BorderLayout.WEST);
 
+        ScriptPanel sp = new ScriptPanel();
+        panel.add(sp, BorderLayout.EAST);
+
         JPanel panelButtons = new JPanel();
         panelButtons.setLayout(new BoxLayout(panelButtons, BoxLayout.X_AXIS));
         panelButtons.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -143,8 +146,16 @@ public class NewGame extends JDialog {
         panelButtons.add(Box.createHorizontalGlue());
 
         JButton btnPlay = new JButton("Play");
-        btnPlay.addActionListener(e ->
-            startGame(freePlayMaps.getMapAt(list.getSelectedIndex()), new ScriptManager())
+        btnPlay.addActionListener(e -> {
+                    ScriptManager scripts = new ScriptManager();
+                    if (scripts != null) {
+                        scripts.clear();
+                        for (int i = 0; i < sp.getScripts().length; i++) {
+                            scripts.add(sp.getScripts()[i]);
+                        }
+                    }
+                    startGame(freePlayMaps.getMapAt(list.getSelectedIndex()), scripts);
+                }
         );
         panelButtons.add(btnPlay);
 
