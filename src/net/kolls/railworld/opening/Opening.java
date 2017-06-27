@@ -291,7 +291,7 @@ public class Opening extends JFrame implements ActionListener {
 
 		verp.add(new JLabel("Rail World Version "+version));
 		verp.add(Box.createHorizontalGlue());
-		verp.add(new JLabel("http://www.kolls.net/railworld"));
+		verp.add(new JLabel("http://railworld.siarhei.by"));
 
 
 		cp.add(verp, BorderLayout.SOUTH);
